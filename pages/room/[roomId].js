@@ -30,13 +30,23 @@ export default function Room() {
   useEffect(() => {
     if (!roomId || !username) return
 
-    const newSocket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001')
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001'
+    console.log('Connecting to WebSocket server:', socketUrl)
+    const newSocket = io(socketUrl)
     setSocket(newSocket)
 
     newSocket.emit('joinRoom', {
       roomId,
       username,
       isHost: host === 'true'
+    })
+
+    newSocket.on('connect', () => {
+      console.log('✅ Connected to WebSocket server')
+    })
+
+    newSocket.on('connect_error', (error) => {
+      console.error('❌ WebSocket connection error:', error)
     })
 
     newSocket.on('roomUpdate', (data) => {

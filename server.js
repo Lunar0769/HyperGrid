@@ -18,6 +18,9 @@ const io = new Server(httpServer, {
     origin: [
       "http://localhost:3000",
       "https://hypergrid-u9d2.onrender.com",
+      "https://hyper-grid.vercel.app",
+      "https://hyper-grid-gdgpcywnt-lunar-projects.vercel.app",
+      "https://hyper-grid-hxivfp7gr-lunar-projects.vercel.app",
       /\.vercel\.app$/,
       /\.onrender\.com$/
     ],
