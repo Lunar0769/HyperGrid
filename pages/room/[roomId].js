@@ -35,6 +35,7 @@ export default function Room() {
     const newSocket = io(socketUrl)
     setSocket(newSocket)
 
+    console.log('Emitting joinRoom:', { roomId, username, isHost: host === 'true' })
     newSocket.emit('joinRoom', {
       roomId,
       username,

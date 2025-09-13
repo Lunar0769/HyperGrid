@@ -15,15 +15,7 @@ const httpServer = createServer((req, res) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "https://hypergrid-u9d2.onrender.com",
-      "https://hyper-grid.vercel.app",
-      "https://hyper-grid-gdgpcywnt-lunar-projects.vercel.app",
-      "https://hyper-grid-hxivfp7gr-lunar-projects.vercel.app",
-      /\.vercel\.app$/,
-      /\.onrender\.com$/
-    ],
+    origin: true, // Allow all origins temporarily for debugging
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -268,9 +260,10 @@ class GameRoom {
 }
 
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id)
+  console.log('✅ User connected:', socket.id, 'from origin:', socket.handshake.headers.origin)
 
   socket.on('joinRoom', ({ roomId, username, isHost }) => {
+    console.log('📥 joinRoom received:', { roomId, username, isHost, socketId: socket.id })
     let room = rooms.get(roomId)
     
     if (!room) {
