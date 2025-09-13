@@ -459,8 +459,8 @@ body {
     font-size: 2rem;
   }
 }
-/* Addit
-ional styles for enhanced features */
+
+/* Additional styles for enhanced features */
 .spectator-indicator {
   color: #ff9800;
   font-weight: bold;
@@ -656,8 +656,9 @@ ional styles for enhanced features */
 .waiting-area p {
   color: rgba(255, 255, 255, 0.8);
   font-size: 1.1rem;
-}/* Clear 
-button styles */
+}
+
+/* Clear button styles */
 .btn-clear {
   background: linear-gradient(45deg, #f44336, #d32f2f) !important;
   color: white !important;
