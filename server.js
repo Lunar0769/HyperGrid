@@ -17,8 +17,9 @@ const io = new Server(httpServer, {
   cors: {
     origin: [
       "http://localhost:3000",
-      "https://your-vercel-app.vercel.app", // Replace with your actual Vercel URL
-      /\.vercel\.app$/
+      "https://hypergrid-u9d2.onrender.com",
+      /\.vercel\.app$/,
+      /\.onrender\.com$/
     ],
     methods: ["GET", "POST"],
     credentials: true
