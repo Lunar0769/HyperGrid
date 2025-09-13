@@ -30,7 +30,8 @@ export default function Room() {
   useEffect(() => {
     if (!roomId || !username) return
 
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001'
+    // Temporarily hardcode the URL to avoid environment variable issues
+    const socketUrl = 'https://hypergrid-u9d2.onrender.com'
     console.log('Connecting to WebSocket server:', socketUrl)
     const newSocket = io(socketUrl)
     setSocket(newSocket)
