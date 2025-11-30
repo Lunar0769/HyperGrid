@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import io from 'socket.io-client'
-import ParticleBackground from '../../components/ParticleBackground'
+// Removed ParticleBackground - using DottedSurface instead
 import GameBoard from '../../components/GameBoard'
 import RoomInfo from '../../components/RoomInfo'
 
 export default function Room() {
   const router = useRouter()
   const { roomId, username, host } = router.query
-  
+
   const [socket, setSocket] = useState(null)
   const [gameState, setGameState] = useState({
     boards: Array.from({ length: 9 }, () => Array(9).fill(null)),
@@ -105,83 +105,65 @@ export default function Room() {
 
   return (
     <div className="room-container">
-      <ParticleBackground />
       <div className="room-content">
         <div className="room-header">
           <h1>Room: {roomId}</h1>
-          <button 
-            onClick={() => router.push('/')}
-            className="btn btn-secondary"
-          >
-            Leave Room
-          </button>
+          <div className="header-buttons">
+            {gameState.gameStatus === 'finished' && roomData.host === username && (
+              <button
+                onClick={() => {
+                  if (socket) {
+                    socket.emit('resetGame', { roomId })
+                  }
+                }}
+                className="btn btn-primary"
+              >
+                🎮 New Game
+              </button>
+            )}
+            <button
+              onClick={() => router.push('/')}
+              className="btn btn-secondary"
+            >
+              Leave Room
+            </button>
+          </div>
         </div>
-        
+
         <div className="room-layout">
-          <RoomInfo 
+          <RoomInfo
             roomData={roomData}
             currentUser={username}
             onAssignPlayer={assignPlayer}
             onStartGame={startGame}
             gameStatus={gameState.gameStatus}
           />
-          
+
           <div className="game-section">
-            {gameState.gameStatus === 'playing' ? (
-              <GameBoard 
-                boards={gameState.boards}
-                subBoardWinners={gameState.subBoardWinners}
-                nextBoard={gameState.nextBoard}
-                currentPlayer={gameState.currentPlayer}
-                canChooseBoard={gameState.canChooseBoard}
-                boardChooser={gameState.boardChooser}
-                onCellClick={makeMove}
-                onBoardSelect={selectBoard}
-                playerSymbol={
-                  roomData.activePlayers.X === username ? 'X' :
-                  roomData.activePlayers.O === username ? 'O' : null
+            <GameBoard
+              boards={gameState.boards}
+              subBoardWinners={gameState.subBoardWinners}
+              nextBoard={gameState.nextBoard}
+              currentPlayer={gameState.currentPlayer}
+              canChooseBoard={gameState.canChooseBoard}
+              boardChooser={gameState.boardChooser}
+              gameStatus={gameState.gameStatus}
+              winner={gameState.winner}
+              isHost={roomData.host === username}
+              onNewGame={() => {
+                if (socket) {
+                  socket.emit('resetGame', { roomId })
                 }
-              />
-            ) : gameState.gameStatus === 'finished' ? (
-              <div className="game-results">
-                <h2>🎉 Game Over! 🎉</h2>
-                <div className="winner-announcement">
-                  {gameState.winner === 'tie' ? (
-                    <p>It's a tie! Great game! 🤝</p>
-                  ) : (
-                    <p>🏆 Player {gameState.winner} wins! 🏆</p>
-                  )}
-                </div>
-                <GameBoard 
-                  boards={gameState.boards}
-                  subBoardWinners={gameState.subBoardWinners}
-                  nextBoard={null}
-                  currentPlayer={gameState.currentPlayer}
-                  canChooseBoard={false}
-                  onCellClick={() => {}} // No clicks allowed
-                  onBoardSelect={() => {}} // No board selection allowed
-                  playerSymbol={null} // Show as spectator
-                />
-                {roomData.host === username && (
-                  <button 
-                    onClick={() => {
-                      if (socket) {
-                        socket.emit('resetGame', { roomId })
-                      }
-                    }}
-                    className="btn btn-primary"
-                    style={{ marginTop: '2rem' }}
-                  >
-                    Start New Game
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div className="waiting-area">
-                <h2>Waiting for game to start...</h2>
-                <p>Host needs to assign players and start the game</p>
-              </div>
-            )}
+              }}
+              onStartGame={startGame}
+              canStartGame={roomData.host === username && roomData.activePlayers.X && roomData.activePlayers.O}
+              onCellClick={makeMove}
+              onBoardSelect={selectBoard}
+              playerSymbol={
+                roomData.activePlayers.X === username ? 'X' :
+                roomData.activePlayers.O === username ? 'O' : null
+              }
+            />
           </div>
         </div>
       </div>

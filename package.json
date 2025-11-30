@@ -1,5 +1,5 @@
 {
-  "name": "mega-tic-tac-toe",
+  "name": "hyper-grid",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,15 +11,17 @@
     "dev:full": "concurrently \"npm run server\" \"npm run dev\""
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.4",
     "next": "14.0.0",
     "react": "^18",
     "react-dom": "^18",
     "socket.io": "^4.7.4",
-    "socket.io-client": "^4.7.4"
+    "socket.io-client": "^4.7.4",
+    "three": "^0.181.2"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "eslint": "^8",
-    "eslint-config-next": "14.0.0",
-    "concurrently": "^8.2.2"
+    "eslint-config-next": "14.0.0"
   }
 }

@@ -1,6 +1,6 @@
-# 🎮 Mega Tic Tac Toe - Multiplayer Game
+# 🎮 Hyper Grid - Multiplayer Game
 
-A real-time multiplayer Ultimate Tic Tac Toe game built with Next.js and Socket.IO, featuring particle effects and room management.
+A real-time multiplayer Ultimate Tic Tac Toe game built with Next.js and Socket.IO, featuring animated dotted surface effects and room management.
 
 ![Game Screenshot](https://via.placeholder.com/800x400/1a1a2e/16213e?text=Mega+Tic+Tac+Toe)
 

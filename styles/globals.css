@@ -6,21 +6,13 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  background: linear-gradient(135deg, #000000 0%, #0a0a0f 50%, #0f0f1a 100%);
   color: white;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-.particle-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
-}
+/* Removed old particle canvas */
 
 /* Home Page */
 .home-container {
@@ -270,19 +262,26 @@ body {
 .game-container {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 550px;
+  margin: 0 auto;
 }
 
 .game-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+}
+
+.game-header h2 {
+  margin: 0.5rem 0;
+  font-size: 1.5rem;
 }
 
 .turn-indicator {
-  margin-top: 0.5rem;
-  font-size: 1.1rem;
+  margin-top: 0.3rem;
+  font-size: 1rem;
 }
 
 .turn-indicator.my-turn {
@@ -293,13 +292,15 @@ body {
 .mega-board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  max-width: 650px;
+  gap: 10px;
+  width: 450px;
+  height: 450px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 12px;
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 25px;
+  border-radius: 20px;
   border: 2px solid rgba(100, 181, 246, 0.2);
+  box-sizing: border-box;
 }
 
 .sub-board {
@@ -307,9 +308,14 @@ body {
   background: rgba(255, 255, 255, 0.08);
   border: 3px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
-  padding: 12px;
+  padding: 8px;
   transition: all 0.4s ease;
   backdrop-filter: blur(10px);
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
 }
 
 .sub-board.active {
@@ -375,22 +381,30 @@ body {
 .cells-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .cell {
-  aspect-ratio: 1;
+  aspect-ratio: 1 / 1;
   border: 2px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
   color: white;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-height: 55px;
+  width: 100%;
+  height: 100%;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cell::before {
@@ -444,6 +458,49 @@ body {
 .waiting-area {
   text-align: center;
   padding: 4rem 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+  border: 2px solid rgba(100, 181, 246, 0.2);
+  width: 450px;
+  height: 450px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.waiting-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 450px;
+  height: 450px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+  border: 2px solid rgba(100, 181, 246, 0.2);
+  box-sizing: border-box;
+}
+
+.waiting-text {
+  font-size: 1.2rem;
+  color: rgba(100, 181, 246, 0.8);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.waiting-message {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  margin-top: 0.3rem;
+}
+
+.btn-start-game {
+  font-size: 1.1rem !important;
+  padding: 0.8rem 1.5rem !important;
 }
 
 .waiting-area h2 {
@@ -983,4 +1040,147 @@ body {
   .waiting-choice-hint {
     font-size: 0.8rem;
   }
+}
+
+/* Dotted Surface Background */
+.dotted-surface {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.dotted-surface canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Redesigned Home Page */
+.home-content {
+  max-width: 450px !important;
+  width: 100% !important;
+  padding: 3rem 2.5rem !important;
+}
+
+.logo-section {
+  margin-bottom: 2.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: rgba(100, 181, 246, 0.8);
+  margin-top: 0.5rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.mode-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.mode-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, #64b5f6, #42a5f5);
+  color: white;
+  box-shadow: 0 4px 15px rgba(100, 181, 246, 0.4);
+  transform: scale(1.02);
+  animation: modeActivate 0.3s ease-out;
+}
+
+@keyframes modeActivate {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: rgba(100, 181, 246, 0.9);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-large {
+  padding: 1.2rem 2rem !important;
+  font-size: 1.1rem !important;
+  margin-top: 1rem !important;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.hint {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hint kbd {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: rgba(100, 181, 246, 0.9);
+  margin: 0 0.2rem;
 }

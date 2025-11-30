@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import SubBoard from './SubBoard'
+import { fireVictoryConfetti } from './Confetti'
 
 export default function GameBoard({ 
   boards, 
@@ -11,11 +13,24 @@ export default function GameBoard({
   boardChooser = null,
   waitingForOpponentChoice = false,
   choosingPlayer = null,
-  subBoardWinners = []
+  subBoardWinners = [],
+  gameStatus = 'playing',
+  winner = null,
+  isHost = false,
+  onNewGame = null,
+  onStartGame = null,
+  canStartGame = false
 }) {
   const isMyTurn = currentPlayer === playerSymbol
   const isSpectator = !playerSymbol
   const canIChooseBoard = canChooseBoard && (boardChooser === playerSymbol || (!boardChooser && isMyTurn))
+
+  // Fire confetti on victory
+  useEffect(() => {
+    if (gameStatus === 'finished' && winner && winner !== 'tie') {
+      fireVictoryConfetti()
+    }
+  }, [gameStatus, winner])
 
   // Calculate which board will be next after current player's move
   const getNextMoveIndicator = (boardIndex) => {
@@ -31,14 +46,36 @@ export default function GameBoard({
   return (
     <div className="game-container">
       <div className="game-header">
-        <h2>Current Turn: {currentPlayer}</h2>
-        {playerSymbol ? (
-          <p className={`turn-indicator ${isMyTurn ? 'my-turn' : ''}`}>
-            You are: {playerSymbol} {isMyTurn ? '(Your turn!)' : '(Opponent\'s turn)'}
-          </p>
-        ) : (
-          <p className="spectator-indicator">
-            👁️ Spectating - {currentPlayer}'s turn
+        {gameStatus === 'finished' && isHost && onNewGame && (
+          <button 
+            onClick={onNewGame}
+            className="new-game-header-btn"
+          >
+            🎮 New Game
+          </button>
+        )}
+        <h2>
+          {gameStatus === 'finished' 
+            ? (winner === 'tie' ? '🤝 Game Tied!' : `🏆 ${winner} Wins!`)
+            : gameStatus === 'waiting'
+            ? '⏳ Waiting to Start...'
+            : `Current Turn: ${currentPlayer}`
+          }
+        </h2>
+        {gameStatus === 'playing' && (
+          playerSymbol ? (
+            <p className={`turn-indicator ${isMyTurn ? 'my-turn' : ''}`}>
+              You are: {playerSymbol} {isMyTurn ? '(Your turn!)' : '(Opponent\'s turn)'}
+            </p>
+          ) : (
+            <p className="spectator-indicator">
+              👁️ Spectating - {currentPlayer}'s turn
+            </p>
+          )
+        )}
+        {gameStatus === 'waiting' && (
+          <p className="waiting-message">
+            Host needs to assign players and start the game
           </p>
         )}
         
@@ -70,7 +107,20 @@ export default function GameBoard({
         )}
       </div>
       
-      <div className="mega-board">
+      {gameStatus === 'waiting' ? (
+        <div className="waiting-board">
+          <p className="waiting-text">Assign players to start the game</p>
+          {canStartGame && onStartGame && (
+            <button 
+              onClick={onStartGame}
+              className="btn btn-primary btn-start-game"
+            >
+              🚀 Start Game
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="mega-board">
         {boards.map((cells, boardIndex) => {
           const subBoardWinner = subBoardWinners[boardIndex] || getSubBoardWinner(cells)
           const isBoardComplete = isSubBoardComplete(cells)
@@ -110,6 +160,7 @@ export default function GameBoard({
           )
         })}
       </div>
+      )}
     </div>
   )
 }
