@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import io from 'socket.io-client'
-// Removed ParticleBackground - using DottedSurface instead
+import ParticleBackground from '../../components/ParticleBackground'
 import GameBoard from '../../components/GameBoard'
 import RoomInfo from '../../components/RoomInfo'
 
@@ -104,11 +104,18 @@ export default function Room() {
   }
 
   return (
-    <div className="room-container">
-      <div className="room-content">
-        <div className="room-header">
-          <h1>Room: {roomId}</h1>
-          <div className="header-buttons">
+    <div className="room-container-tech">
+      <ParticleBackground />
+
+      {/* Top Header */}
+      <div className="tech-header">
+        <div className="tech-header-content">
+          <div className="tech-logo">
+            <div className="tech-logo-text">HYPERGRID</div>
+            <div className="tech-divider"></div>
+            <span className="tech-est">ROOM: {roomId}</span>
+          </div>
+          <div className="tech-header-actions">
             {gameState.gameStatus === 'finished' && roomData.host === username && (
               <button
                 onClick={() => {
@@ -116,30 +123,52 @@ export default function Room() {
                     socket.emit('resetGame', { roomId })
                   }
                 }}
-                className="btn btn-primary"
+                className="btn-tech-header"
               >
-                🎮 New Game
+                <span className="btn-corner btn-corner-tl"></span>
+                <span className="btn-corner btn-corner-br"></span>
+                NEW GAME
               </button>
             )}
             <button
               onClick={() => router.push('/')}
-              className="btn btn-secondary"
+              className="btn-tech-header btn-tech-secondary"
             >
-              Leave Room
+              <span className="btn-corner btn-corner-tl"></span>
+              <span className="btn-corner btn-corner-br"></span>
+              EXIT
             </button>
           </div>
         </div>
+      </div>
 
-        <div className="room-layout">
-          <RoomInfo
-            roomData={roomData}
-            currentUser={username}
-            onAssignPlayer={assignPlayer}
-            onStartGame={startGame}
-            gameStatus={gameState.gameStatus}
-          />
+      {/* Corner Frame Accents */}
+      <div className="corner-frame corner-tl"></div>
+      <div className="corner-frame corner-tr"></div>
+      <div className="corner-frame corner-bl"></div>
+      <div className="corner-frame corner-br"></div>
 
-          <div className="game-section">
+      {/* Main Content */}
+      <div className="room-content-tech">
+        <div className="room-layout-tech">
+          {/* Room Info Sidebar */}
+          <div className="room-sidebar-tech">
+            <div className="sidebar-header-tech">
+              <div className="deco-line-short"></div>
+              <span className="sidebar-title-tech">PLAYERS</span>
+              <div className="deco-line-short"></div>
+            </div>
+            <RoomInfo
+              roomData={roomData}
+              currentUser={username}
+              onAssignPlayer={assignPlayer}
+              onStartGame={startGame}
+              gameStatus={gameState.gameStatus}
+            />
+          </div>
+
+          {/* Game Section */}
+          <div className="game-section-tech">
             <GameBoard
               boards={gameState.boards}
               subBoardWinners={gameState.subBoardWinners}
@@ -164,6 +193,34 @@ export default function Room() {
                 roomData.activePlayers.O === username ? 'O' : null
               }
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Footer */}
+      <div className="tech-footer">
+        <div className="tech-footer-content">
+          <div className="tech-status">
+            <span className="status-text">GAME.{gameState.gameStatus.toUpperCase()}</span>
+            <div className="status-bars">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div 
+                  key={i} 
+                  className="status-bar"
+                  style={{ height: `${Math.random() * 8 + 4}px` }}
+                ></div>
+              ))}
+            </div>
+            <span className="status-version">PLAYER: {username}</span>
+          </div>
+          <div className="tech-render">
+            <span className="render-text">◐ LIVE</span>
+            <div className="render-dots">
+              <div className="render-dot render-dot-1"></div>
+              <div className="render-dot render-dot-2"></div>
+              <div className="render-dot render-dot-3"></div>
+            </div>
+            <span className="render-frame">TURN: {gameState.currentPlayer}</span>
           </div>
         </div>
       </div>

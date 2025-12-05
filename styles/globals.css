@@ -279,6 +279,25 @@ body {
   font-size: 1.5rem;
 }
 
+.new-game-header-btn {
+  position: relative;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  border: 1px solid white;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.new-game-header-btn:hover {
+  background: white;
+  color: black;
+}
+
 .turn-indicator {
   margin-top: 0.3rem;
   font-size: 1rem;
@@ -499,8 +518,21 @@ body {
 }
 
 .btn-start-game {
-  font-size: 1.1rem !important;
-  padding: 0.8rem 1.5rem !important;
+  position: relative;
+  font-size: 0.875rem !important;
+  padding: 0.75rem 1.5rem !important;
+  background: transparent !important;
+  color: white !important;
+  font-family: 'Courier New', monospace !important;
+  border: 1px solid white !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  letter-spacing: 0.1em !important;
+}
+
+.btn-start-game:hover {
+  background: white !important;
+  color: black !important;
 }
 
 .waiting-area h2 {
@@ -676,22 +708,53 @@ body {
 
 @media (max-width: 480px) {
   .mega-board {
-    max-width: 320px;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .cell {
-    min-height: 35px;
-    font-size: 1.2rem;
-  }
-
-  .sub-board {
+    width: 300px;
+    height: 300px;
+    max-width: 300px;
+    gap: 6px;
     padding: 8px;
   }
 
+  .waiting-board {
+    width: 300px;
+    height: 300px;
+  }
+
+  .waiting-area {
+    width: 300px;
+    height: 300px;
+  }
+
+  .cell {
+    min-height: 26px;
+    font-size: 0.9rem;
+    border-width: 1px;
+  }
+
+  .sub-board {
+    padding: 5px;
+    gap: 3px;
+  }
+
   .winner-overlay {
-    font-size: 2.5rem;
+    font-size: 2rem;
+  }
+
+  .game-container {
+    padding: 0.5rem;
+  }
+
+  .tech-logo-text {
+    font-size: 0.875rem;
+  }
+
+  .tech-est {
+    font-size: 0.75rem;
+  }
+
+  .btn-tech-header {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.5rem;
   }
 }
 
@@ -1183,4 +1246,948 @@ body {
   font-size: 0.9rem;
   color: rgba(100, 181, 246, 0.9);
   margin: 0 0.2rem;
+}
+
+
+/* ============================================
+   TECHNICAL HOME PAGE STYLES
+   ============================================ */
+
+.home-container-tech {
+  position: relative;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Top Header */
+.tech-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tech-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tech-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tech-logo-text {
+  font-family: 'Courier New', monospace;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 0.3em;
+  font-style: italic;
+  transform: skewX(-12deg);
+}
+
+.tech-divider {
+  height: 1rem;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.tech-est {
+  color: #64b5f6;
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 10px rgba(100, 181, 246, 0.5);
+}
+
+.tech-coords {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tech-dot {
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
+
+/* Corner Frames */
+.corner-frame {
+  position: absolute;
+  z-index: 20;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.corner-tl {
+  top: 0;
+  left: 0;
+  width: 3rem;
+  height: 3rem;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.corner-tr {
+  top: 0;
+  right: 0;
+  width: 3rem;
+  height: 3rem;
+  border-top: 2px solid;
+  border-right: 2px solid;
+}
+
+.corner-bl {
+  bottom: 3rem;
+  left: 0;
+  width: 3rem;
+  height: 3rem;
+  border-bottom: 2px solid;
+  border-left: 2px solid;
+}
+
+.corner-br {
+  bottom: 3rem;
+  right: 0;
+  width: 3rem;
+  height: 3rem;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+
+/* Main Content */
+.home-content-tech {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  padding-top: 4rem;
+  padding-bottom: 6rem;
+}
+
+.content-wrapper-tech {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
+}
+
+.content-inner-tech {
+  max-width: 32rem;
+  position: relative;
+}
+
+/* Decorative Top Line */
+.deco-line-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.6;
+}
+
+.deco-line-short {
+  width: 2rem;
+  height: 1px;
+  background: white;
+}
+
+.deco-number {
+  color: white;
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.15em;
+}
+
+.deco-line-long {
+  flex: 1;
+  height: 1px;
+  background: white;
+}
+
+/* Title Section */
+.title-section-tech {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.dither-accent {
+  position: absolute;
+  left: -0.75rem;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent 0px, transparent 1px, white 1px, white 2px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 1px, white 1px, white 2px);
+  background-size: 3px 3px;
+  opacity: 0.4;
+}
+
+.title-tech {
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  line-height: 1.2;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+}
+
+.title-sub-tech {
+  display: block;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+/* Decorative Dots */
+.deco-dots {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.4;
+  flex-wrap: wrap;
+}
+
+.deco-dot {
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+}
+
+/* Description */
+.description-tech {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.description-tech p {
+  font-size: 1rem;
+  color: #d1d5db;
+  line-height: 1.6;
+  font-family: 'Courier New', monospace;
+  opacity: 0.8;
+  margin: 0;
+}
+
+/* Mode Selector */
+.mode-selector-tech {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mode-btn-tech {
+  position: relative;
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.1em;
+}
+
+.mode-btn-tech:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.mode-btn-tech.active {
+  background: white;
+  color: black;
+  border-color: white;
+}
+
+.mode-corner {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.mode-btn-tech:hover .mode-corner,
+.mode-btn-tech.active .mode-corner {
+  opacity: 1;
+}
+
+.mode-corner-tl {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.mode-corner-br {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+}
+
+/* Input Section */
+.input-section-tech {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-group-tech {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-label-tech {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+}
+
+.input-tech {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.input-tech:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.input-tech::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Primary Button */
+.btn-tech-primary {
+  position: relative;
+  padding: 0.875rem 1.5rem;
+  background: transparent;
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  border: 1px solid white;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+}
+
+.btn-tech-primary:hover:not(:disabled) {
+  background: white;
+  color: black;
+}
+
+.btn-tech-primary:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-corner {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.btn-tech-primary:hover:not(:disabled) .btn-corner {
+  opacity: 1;
+}
+
+.btn-corner-tl {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.btn-corner-br {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+}
+
+/* Bottom Decorative Line */
+.deco-line-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.4;
+}
+
+.deco-symbol {
+  color: white;
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+}
+
+.deco-text {
+  color: white;
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+}
+
+/* Bottom Footer */
+.tech-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.tech-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tech-status {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.status-bars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.status-bar {
+  width: 4px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.tech-render {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.render-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.render-dot {
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.render-dot-2 {
+  animation-delay: 0.2s;
+}
+
+.render-dot-3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .tech-coords {
+    display: none;
+  }
+
+  .tech-logo-text {
+    font-size: 1rem;
+  }
+
+  .tech-est {
+    font-size: 0.875rem;
+  }
+
+  .corner-tl, .corner-tr, .corner-bl, .corner-br {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .content-wrapper-tech {
+    padding: 0 1rem;
+  }
+
+  .title-tech {
+    font-size: 1.5rem;
+  }
+
+  .deco-dots {
+    display: none;
+  }
+
+  .dither-accent {
+    display: none;
+  }
+
+  .mode-selector-tech {
+    flex-direction: column;
+  }
+
+  .status-bars {
+    display: none;
+  }
+
+  .render-text,
+  .render-frame {
+    display: none;
+  }
+
+  .status-text {
+    font-size: 0.5rem;
+  }
+
+  /* Mobile Game Board */
+  .mega-board {
+    width: 320px;
+    height: 320px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .waiting-board {
+    width: 320px;
+    height: 320px;
+  }
+
+  .waiting-area {
+    width: 320px;
+    height: 320px;
+  }
+
+  .game-container {
+    padding: 0.75rem;
+    max-width: 100%;
+  }
+
+  .game-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .turn-indicator,
+  .spectator-indicator,
+  .board-selection-hint,
+  .next-move-hint,
+  .waiting-message {
+    font-size: 0.75rem;
+  }
+}
+
+
+/* ============================================
+   TECHNICAL ROOM PAGE STYLES
+   ============================================ */
+
+.room-container-tech {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.room-content-tech {
+  position: relative;
+  z-index: 10;
+  padding-top: 5rem;
+  padding-bottom: 6rem;
+  min-height: 100vh;
+}
+
+.room-layout-tech {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Room Sidebar */
+.room-sidebar-tech {
+  position: sticky;
+  top: 6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-header-tech {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-title-tech {
+  color: white;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.15em;
+  font-weight: bold;
+}
+
+/* Game Section */
+.game-section-tech {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Header Actions */
+.tech-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-tech-header {
+  position: relative;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  border: 1px solid white;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.1em;
+}
+
+.btn-tech-header:hover {
+  background: white;
+  color: black;
+}
+
+.btn-tech-header:hover .btn-corner {
+  opacity: 1;
+}
+
+.btn-tech-secondary {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.btn-tech-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+  color: white;
+}
+
+/* Update Game Container for Tech Theme */
+.game-container {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.game-header h2 {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+}
+
+.turn-indicator,
+.spectator-indicator,
+.board-selection-hint,
+.next-move-hint,
+.waiting-message {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+/* Mobile Responsive for Room */
+@media (max-width: 1024px) {
+  .room-layout-tech {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .room-sidebar-tech {
+    position: relative;
+    top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .room-layout-tech {
+    padding: 0.5rem;
+  }
+
+  .tech-header-actions {
+    gap: 0.5rem;
+  }
+
+  .btn-tech-header {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.625rem;
+  }
+
+  .room-sidebar-tech {
+    padding: 1rem;
+  }
+
+  .member-item {
+    padding: 0.5rem;
+  }
+
+  .player-controls {
+    gap: 0.25rem;
+  }
+
+  .btn-small {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.625rem;
+  }
+
+  .player-slot {
+    padding: 0.5rem;
+  }
+
+  .member-name {
+    font-size: 0.7rem;
+  }
+
+  .player-slot .player-name {
+    font-size: 0.7rem;
+  }
+
+  .spectator-item {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  .room-info .section h3 {
+    font-size: 0.7rem;
+  }
+}
+
+
+/* ============================================
+   TECHNICAL ROOM INFO STYLES
+   ============================================ */
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.room-info .section {
+  position: relative;
+}
+
+.room-info .section h3 {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.member-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.member-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.member-name {
+  color: white;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+}
+
+.player-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-small {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.1em;
+}
+
+.btn-small:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+.btn-small.active {
+  background: white;
+  color: black;
+  border-color: white;
+}
+
+.btn-clear {
+  background: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.3);
+  color: rgba(255, 100, 100, 0.8);
+}
+
+.btn-clear:hover {
+  background: rgba(255, 0, 0, 0.2);
+  border-color: rgba(255, 0, 0, 0.5);
+  color: rgb(255, 100, 100);
+}
+
+.spectators-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.spectator-item {
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+}
+
+.game-status {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.players-assigned {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.player-slot .symbol {
+  color: rgba(100, 181, 246, 0.9);
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  min-width: 1.5rem;
+}
+
+.player-slot .player-name {
+  color: white;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+}
+
+.room-info .btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.room-info .btn-primary:hover:not(:disabled) {
+  background: white;
+  color: black;
+}
+
+.room-info .btn-primary:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.3);
 }
