@@ -2255,16 +2255,69 @@ body {
 }
 
 .hyperpoly-board {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  gap: 4px;
+  position: relative;
   width: 600px;
   height: 600px;
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   padding: 8px;
+}
+
+.board-track {
+  position: absolute;
+  display: flex;
+}
+
+.board-track.bottom {
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  flex-direction: row;
+}
+
+.board-track.right {
+  right: 8px;
+  bottom: 8px;
+  top: 8px;
+  flex-direction: column;
+}
+
+.board-track.top {
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  flex-direction: row-reverse;
+}
+
+.board-track.left {
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  flex-direction: column-reverse;
+}
+
+.board-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  font-family: 'Courier New', monospace;
+}
+
+.board-center h2 {
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: 0.2em;
+  color: #4caf50;
+}
+
+.board-center p {
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0 0;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .board-space {
@@ -2276,18 +2329,21 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  padding: 8px;
   transition: all 0.2s;
+  min-width: 50px;
+  min-height: 80px;
+  flex: 1;
 }
 
 .board-space:hover {
   background: rgba(255, 255, 255, 0.08);
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 .corner-space {
-  grid-column: span 2;
-  grid-row: span 2;
+  min-width: 80px;
+  min-height: 80px;
   font-size: 0.9rem;
   font-weight: bold;
 }
@@ -2776,36 +2832,72 @@ body {
 
 @media (max-width: 768px) {
   .hyperpoly-board {
-    width: 400px;
-    height: 400px;
-    gap: 3px;
+    width: 500px;
+    height: 500px;
     padding: 6px;
   }
 
   .board-space {
-    padding: 2px;
+    padding: 6px;
+    min-width: 40px;
+    min-height: 65px;
+  }
+
+  .corner-space {
+    min-width: 65px;
+    min-height: 65px;
   }
 
   .space-name {
+    font-size: 0.45rem;
+  }
+
+  .space-price {
     font-size: 0.4rem;
   }
 
   .player-token {
     width: 10px;
     height: 10px;
-    font-size: 0.4rem;
+    font-size: 0.45rem;
+  }
+
+  .board-center h2 {
+    font-size: 1.5rem;
+  }
+
+  .board-center p {
+    font-size: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
   .hyperpoly-board {
-    width: 320px;
-    height: 320px;
-    gap: 2px;
+    width: 380px;
+    height: 380px;
     padding: 4px;
   }
 
+  .board-space {
+    padding: 4px;
+    min-width: 32px;
+    min-height: 55px;
+  }
+
+  .corner-space {
+    min-width: 55px;
+    min-height: 55px;
+  }
+
   .space-name {
+    font-size: 0.35rem;
+  }
+
+  .space-number {
+    font-size: 0.4rem;
+  }
+
+  .space-price {
     font-size: 0.35rem;
   }
 
@@ -2813,5 +2905,115 @@ body {
     width: 8px;
     height: 8px;
     font-size: 0.35rem;
+  }
+
+  .board-center h2 {
+    font-size: 1.2rem;
+  }
+
+  .board-center p {
+    font-size: 0.65rem;
+  }
+}
+
+
+/* ============================================
+   GAME SELECTION CARDS
+   ============================================ */
+
+.game-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.game-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+}
+
+.game-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.game-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.game-card-header h3 {
+  color: white;
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.15em;
+  margin: 0;
+}
+
+.game-badge {
+  padding: 0.25rem 0.75rem;
+  background: rgba(33, 150, 243, 0.2);
+  border: 1px solid #2196f3;
+  border-radius: 4px;
+  color: #2196f3;
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+}
+
+.game-badge-new {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.game-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+}
+
+.game-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.divider-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.2em;
+}
+
+/* Mobile adjustments for game cards */
+@media (max-width: 768px) {
+  .game-card {
+    padding: 1rem;
+  }
+
+  .game-card-header h3 {
+    font-size: 0.875rem;
+  }
+
+  .game-description {
+    font-size: 0.75rem;
   }
 }

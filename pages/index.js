@@ -41,7 +41,7 @@ export default function Home() {
           <div className="tech-logo">
             <div className="tech-logo-text">HYPERGRID</div>
             <div className="tech-divider"></div>
-            <span className="tech-est">EST. 2025</span>
+            <span className="tech-est">GAME HUB</span>
           </div>
           <div className="tech-coords">
             <span>LAT: 37.7749°</span>
@@ -72,8 +72,8 @@ export default function Home() {
             <div className="title-section-tech">
               <div className="dither-accent"></div>
               <h1 className="title-tech">
-                ULTIMATE
-                <span className="title-sub-tech">TIC TAC TOE</span>
+                CHOOSE YOUR
+                <span className="title-sub-tech">GAME MODE</span>
               </h1>
             </div>
 
@@ -86,81 +86,101 @@ export default function Home() {
 
             {/* Description */}
             <div className="description-tech">
-              <p>Where strategy meets geometry — 9 boards, infinite possibilities</p>
+              <p>Select a game to play with friends or AI opponents</p>
             </div>
 
-            {/* Mode Selector */}
-            <div className="mode-selector-tech">
-              <button 
-                className={`mode-btn-tech ${mode === 'create' ? 'active' : ''}`}
-                onClick={() => setMode('create')}
-              >
-                <span className="mode-corner mode-corner-tl"></span>
-                <span className="mode-corner mode-corner-br"></span>
-                CREATE ROOM
-              </button>
-              <button 
-                className={`mode-btn-tech ${mode === 'join' ? 'active' : ''}`}
-                onClick={() => setMode('join')}
-              >
-                <span className="mode-corner mode-corner-tl"></span>
-                <span className="mode-corner mode-corner-br"></span>
-                JOIN ROOM
-              </button>
-            </div>
+            {/* Game Selection */}
+            <div className="game-selection">
+              <div className="game-card">
+                <div className="game-card-header">
+                  <h3>ULTIMATE TIC TAC TOE</h3>
+                  <span className="game-badge">MULTIPLAYER</span>
+                </div>
+                <p className="game-description">9 boards • Strategic gameplay • Real-time multiplayer</p>
+                
+                <div className="mode-selector-tech">
+                  <button 
+                    className={`mode-btn-tech ${mode === 'create' ? 'active' : ''}`}
+                    onClick={() => setMode('create')}
+                  >
+                    <span className="mode-corner mode-corner-tl"></span>
+                    <span className="mode-corner mode-corner-br"></span>
+                    CREATE ROOM
+                  </button>
+                  <button 
+                    className={`mode-btn-tech ${mode === 'join' ? 'active' : ''}`}
+                    onClick={() => setMode('join')}
+                  >
+                    <span className="mode-corner mode-corner-tl"></span>
+                    <span className="mode-corner mode-corner-br"></span>
+                    JOIN ROOM
+                  </button>
+                </div>
 
-            {/* Input Fields */}
-            <div className="input-section-tech">
-              <div className="input-group-tech">
-                <label className="input-label-tech">PLAYER.NAME</label>
-                <input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="input-tech"
-                  autoFocus
-                />
+                <div className="input-section-tech">
+                  <div className="input-group-tech">
+                    <label className="input-label-tech">PLAYER.NAME</label>
+                    <input
+                      type="text"
+                      placeholder="Enter your name"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="input-tech"
+                      autoFocus
+                    />
+                  </div>
+
+                  {mode === 'join' && (
+                    <div className="input-group-tech">
+                      <label className="input-label-tech">ROOM.ID</label>
+                      <input
+                        type="text"
+                        placeholder="Enter 6-digit code"
+                        value={roomId}
+                        onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+                        onKeyPress={handleKeyPress}
+                        className="input-tech"
+                        maxLength={6}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <button 
+                  onClick={mode === 'create' ? createRoom : joinRoom} 
+                  className="btn-tech-primary"
+                  disabled={!username.trim() || (mode === 'join' && !roomId.trim())}
+                >
+                  <span className="btn-corner btn-corner-tl"></span>
+                  <span className="btn-corner btn-corner-br"></span>
+                  {mode === 'create' ? 'START GAME' : 'JOIN GAME'}
+                </button>
               </div>
 
-              {mode === 'join' && (
-                <div className="input-group-tech">
-                  <label className="input-label-tech">ROOM.ID</label>
-                  <input
-                    type="text"
-                    placeholder="Enter 6-digit code"
-                    value={roomId}
-                    onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-                    onKeyPress={handleKeyPress}
-                    className="input-tech"
-                    maxLength={6}
-                  />
+              <div className="game-divider">
+                <div className="divider-line"></div>
+                <span className="divider-text">OR</span>
+                <div className="divider-line"></div>
+              </div>
+
+              <div className="game-card">
+                <div className="game-card-header">
+                  <h3>HYPERPOLY</h3>
+                  <span className="game-badge game-badge-new">NEW</span>
                 </div>
-              )}
+                <p className="game-description">Mini Monopoly • 10 min games • 2-4 players</p>
+                
+                <button 
+                  onClick={() => router.push('/hyperpoly')}
+                  className="btn-tech-primary"
+                >
+                  <span className="btn-corner btn-corner-tl"></span>
+                  <span className="btn-corner btn-corner-br"></span>
+                  🎲 PLAY HYPERPOLY
+                </button>
+              </div>
             </div>
-
-            {/* Action Button */}
-            <button 
-              onClick={mode === 'create' ? createRoom : joinRoom} 
-              className="btn-tech-primary"
-              disabled={!username.trim() || (mode === 'join' && !roomId.trim())}
-            >
-              <span className="btn-corner btn-corner-tl"></span>
-              <span className="btn-corner btn-corner-br"></span>
-              {mode === 'create' ? 'INITIALIZE ROOM' : 'CONNECT TO ROOM'}
-            </button>
-
-            {/* HyperPoly Link */}
-            <button 
-              onClick={() => router.push('/hyperpoly')}
-              className="btn-tech-secondary"
-              style={{ marginTop: '0.5rem' }}
-            >
-              <span className="btn-corner btn-corner-tl"></span>
-              <span className="btn-corner btn-corner-br"></span>
-              🎲 PLAY HYPERPOLY
-            </button>
 
             {/* Bottom technical notation */}
             <div className="deco-line-bottom">
