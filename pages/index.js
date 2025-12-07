@@ -167,9 +167,9 @@ export default function Home() {
               <div className="game-card">
                 <div className="game-card-header">
                   <h3>HYPERPOLY</h3>
-                  <span className="game-badge game-badge-new">NEW</span>
+                  <span className="game-badge game-badge-new">MULTIPLAYER</span>
                 </div>
-                <p className="game-description">Mini Monopoly • 10 min games • 2-4 players</p>
+                <p className="game-description">Mini Monopoly • 10 min games • 2-4 players • Room-based</p>
                 
                 <button 
                   onClick={() => router.push('/hyperpoly')}
