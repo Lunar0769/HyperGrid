@@ -2256,164 +2256,205 @@ body {
 
 .hyperpoly-board {
   position: relative;
-  width: 600px;
-  height: 600px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  width: 700px;
+  height: 700px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  padding: 8px;
+  margin: 0 auto;
 }
 
 .board-track {
   position: absolute;
   display: flex;
+  gap: 0;
 }
 
 .board-track.bottom {
-  bottom: 8px;
-  left: 8px;
-  right: 8px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
   flex-direction: row;
 }
 
 .board-track.right {
-  right: 8px;
-  bottom: 8px;
-  top: 8px;
+  right: 0;
+  top: 100px;
+  bottom: 100px;
+  width: 100px;
   flex-direction: column;
 }
 
 .board-track.top {
-  top: 8px;
-  left: 8px;
-  right: 8px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
   flex-direction: row-reverse;
 }
 
 .board-track.left {
-  left: 8px;
-  top: 8px;
-  bottom: 8px;
+  left: 0;
+  top: 100px;
+  bottom: 100px;
+  width: 100px;
   flex-direction: column-reverse;
 }
 
 .board-center {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: white;
-  font-family: 'Courier New', monospace;
-}
-
-.board-center h2 {
-  font-size: 2rem;
-  margin: 0;
-  letter-spacing: 0.2em;
-  color: #4caf50;
-}
-
-.board-center p {
-  font-size: 0.875rem;
-  margin: 0.5rem 0 0 0;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.board-space {
-  position: relative;
-  background: rgba(255, 255, 255, 0.03);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  top: 100px;
+  left: 100px;
+  right: 100px;
+  bottom: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  text-align: center;
+  color: white;
+  font-family: 'Courier New', monospace;
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.board-center h2 {
+  font-size: 2.5rem;
+  margin: 0;
+  letter-spacing: 0.2em;
+  color: #4caf50;
+  text-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+}
+
+.board-center p {
+  font-size: 1rem;
+  margin: 0.5rem 0 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.1em;
+}
+
+.board-space {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px;
   transition: all 0.2s;
-  min-width: 50px;
-  min-height: 80px;
   flex: 1;
+  overflow: hidden;
+}
+
+.board-track.bottom .board-space,
+.board-track.top .board-space {
+  min-width: 60px;
+  height: 100px;
+}
+
+.board-track.left .board-space,
+.board-track.right .board-space {
+  width: 100px;
+  min-height: 60px;
 }
 
 .board-space:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: scale(1.02);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .corner-space {
-  min-width: 80px;
-  min-height: 80px;
-  font-size: 0.9rem;
+  width: 100px !important;
+  height: 100px !important;
+  min-width: 100px !important;
+  min-height: 100px !important;
+  font-size: 0.75rem;
   font-weight: bold;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .space-number {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  font-size: 0.5rem;
-  color: rgba(255, 255, 255, 0.4);
+  top: 3px;
+  left: 3px;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
   font-family: 'Courier New', monospace;
+  font-weight: bold;
 }
 
 .space-name {
-  font-size: 0.5rem;
+  font-size: 0.65rem;
   color: white;
   text-align: center;
   font-family: 'Courier New', monospace;
   letter-spacing: 0.05em;
+  line-height: 1.2;
+  margin-top: 1rem;
+  font-weight: bold;
 }
 
 .space-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  margin-top: 2px;
+  gap: 3px;
+  margin-top: auto;
 }
 
 .space-price {
-  font-size: 0.45rem;
+  font-size: 0.65rem;
   color: #4caf50;
   font-family: 'Courier New', monospace;
+  font-weight: bold;
 }
 
 .space-upgrade {
-  font-size: 0.6rem;
+  font-size: 0.8rem;
+  margin-top: 2px;
 }
 
 .space-owner {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  border: 1px solid white;
+  border: 2px solid white;
+  margin-top: 2px;
 }
 
 .space-players {
   position: absolute;
-  bottom: 2px;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 2px;
+  gap: 3px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90%;
 }
 
 .player-token {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.5rem;
+  font-size: 0.65rem;
   color: white;
   font-weight: bold;
-  border: 1px solid white;
+  border: 2px solid white;
   font-family: 'Courier New', monospace;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .player-token.active {
-  border: 2px solid yellow;
-  box-shadow: 0 0 8px yellow;
+  border: 3px solid #ffd700;
+  box-shadow: 0 0 12px #ffd700, 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: pulse 1.5s infinite;
 }
 
 /* Side Panel */
@@ -2832,34 +2873,137 @@ body {
 
 @media (max-width: 768px) {
   .hyperpoly-board {
-    width: 500px;
-    height: 500px;
-    padding: 6px;
+    width: 550px;
+    height: 550px;
   }
 
-  .board-space {
-    padding: 6px;
-    min-width: 40px;
-    min-height: 65px;
+  .board-track.bottom,
+  .board-track.top {
+    height: 80px;
+  }
+
+  .board-track.left,
+  .board-track.right {
+    width: 80px;
+    top: 80px;
+    bottom: 80px;
+  }
+
+  .board-center {
+    top: 80px;
+    left: 80px;
+    right: 80px;
+    bottom: 80px;
+  }
+
+  .board-track.bottom .board-space,
+  .board-track.top .board-space {
+    min-width: 45px;
+    height: 80px;
+  }
+
+  .board-track.left .board-space,
+  .board-track.right .board-space {
+    width: 80px;
+    min-height: 45px;
   }
 
   .corner-space {
-    min-width: 65px;
-    min-height: 65px;
+    width: 80px !important;
+    height: 80px !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
+  }
+
+  .space-name {
+    font-size: 0.55rem;
+  }
+
+  .space-price {
+    font-size: 0.55rem;
+  }
+
+  .player-token {
+    width: 14px;
+    height: 14px;
+    font-size: 0.55rem;
+  }
+
+  .board-center h2 {
+    font-size: 2rem;
+  }
+
+  .board-center p {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hyperpoly-board {
+    width: 420px;
+    height: 420px;
+  }
+
+  .board-track.bottom,
+  .board-track.top {
+    height: 65px;
+  }
+
+  .board-track.left,
+  .board-track.right {
+    width: 65px;
+    top: 65px;
+    bottom: 65px;
+  }
+
+  .board-center {
+    top: 65px;
+    left: 65px;
+    right: 65px;
+    bottom: 65px;
+  }
+
+  .board-track.bottom .board-space,
+  .board-track.top .board-space {
+    min-width: 35px;
+    height: 65px;
+  }
+
+  .board-track.left .board-space,
+  .board-track.right .board-space {
+    width: 65px;
+    min-height: 35px;
+  }
+
+  .corner-space {
+    width: 65px !important;
+    height: 65px !important;
+    min-width: 65px !important;
+    min-height: 65px !important;
   }
 
   .space-name {
     font-size: 0.45rem;
+    margin-top: 0.5rem;
+  }
+
+  .space-number {
+    font-size: 0.5rem;
   }
 
   .space-price {
-    font-size: 0.4rem;
+    font-size: 0.45rem;
+  }
+
+  .space-upgrade {
+    font-size: 0.65rem;
   }
 
   .player-token {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     font-size: 0.45rem;
+    border-width: 1.5px;
   }
 
   .board-center h2 {
@@ -2867,52 +3011,7 @@ body {
   }
 
   .board-center p {
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .hyperpoly-board {
-    width: 380px;
-    height: 380px;
-    padding: 4px;
-  }
-
-  .board-space {
-    padding: 4px;
-    min-width: 32px;
-    min-height: 55px;
-  }
-
-  .corner-space {
-    min-width: 55px;
-    min-height: 55px;
-  }
-
-  .space-name {
-    font-size: 0.35rem;
-  }
-
-  .space-number {
-    font-size: 0.4rem;
-  }
-
-  .space-price {
-    font-size: 0.35rem;
-  }
-
-  .player-token {
-    width: 8px;
-    height: 8px;
-    font-size: 0.35rem;
-  }
-
-  .board-center h2 {
-    font-size: 1.2rem;
-  }
-
-  .board-center p {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
 }
 
@@ -3015,118 +3114,5 @@ body {
 
   .game-description {
     font-size: 0.75rem;
-  }
-}
-
-
-/* ============================================
-   HYPERPOLY WAITING LOBBY
-   ============================================ */
-
-.waiting-lobby {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 70vh;
-  padding: 2rem;
-}
-
-.lobby-content {
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 500px;
-  width: 100%;
-  backdrop-filter: blur(10px);
-  text-align: center;
-}
-
-.lobby-content h2 {
-  color: #4caf50;
-  font-size: 1.5rem;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.15em;
-  margin: 0 0 1rem 0;
-}
-
-.room-code {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.875rem;
-  font-family: 'Courier New', monospace;
-  margin-bottom: 2rem;
-}
-
-.room-code span {
-  color: #64b5f6;
-  font-size: 1.5rem;
-  font-weight: bold;
-  letter-spacing: 0.3em;
-  display: block;
-  margin-top: 0.5rem;
-  text-shadow: 0 0 10px rgba(100, 181, 246, 0.5);
-}
-
-.players-waiting {
-  margin-bottom: 2rem;
-}
-
-.players-waiting h3 {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.1em;
-  margin: 0 0 1rem 0;
-}
-
-.waiting-player {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-}
-
-.waiting-player span {
-  color: white;
-  font-size: 0.875rem;
-  font-family: 'Courier New', monospace;
-  flex: 1;
-  text-align: left;
-}
-
-.host-badge {
-  padding: 0.25rem 0.5rem;
-  background: rgba(255, 193, 7, 0.2);
-  border: 1px solid #ffc107;
-  border-radius: 4px;
-  color: #ffc107;
-  font-size: 0.625rem !important;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.1em;
-}
-
-.waiting-message {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.875rem;
-  font-family: 'Courier New', monospace;
-  margin: 1rem 0;
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-  .lobby-content {
-    padding: 1.5rem;
-  }
-
-  .lobby-content h2 {
-    font-size: 1.2rem;
-  }
-
-  .room-code span {
-    font-size: 1.2rem;
   }
 }

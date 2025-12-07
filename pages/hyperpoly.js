@@ -4,31 +4,10 @@ import ParticleBackground from '../components/ParticleBackground'
 
 export default function HyperPolyHome() {
   const router = useRouter()
-  const [username, setUsername] = useState('')
-  const [roomId, setRoomId] = useState('')
-  const [mode, setMode] = useState('create') // 'create' or 'join'
+  const [playerCount, setPlayerCount] = useState(2)
 
-  const createRoom = () => {
-    if (username.trim()) {
-      const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase()
-      router.push(`/hyperpoly/room/${newRoomId}?username=${encodeURIComponent(username)}&host=true`)
-    }
-  }
-
-  const joinRoom = () => {
-    if (username.trim() && roomId.trim()) {
-      router.push(`/hyperpoly/room/${roomId.toUpperCase()}?username=${encodeURIComponent(username)}`)
-    }
-  }
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      if (mode === 'create') {
-        createRoom()
-      } else {
-        joinRoom()
-      }
-    }
+  const startGame = () => {
+    router.push(`/hyperpoly/game?players=${playerCount}`)
   }
 
   return (
@@ -82,68 +61,30 @@ export default function HyperPolyHome() {
             </div>
 
             <div className="description-tech">
-              <p>10 minute games • 40 spaces • 12 properties • Multiplayer rooms</p>
+              <p>10 minute games • 40 spaces • 12 properties • Chance cards</p>
             </div>
 
-            {/* Mode Selector */}
-            <div className="mode-selector-tech">
-              <button 
-                className={`mode-btn-tech ${mode === 'create' ? 'active' : ''}`}
-                onClick={() => setMode('create')}
-              >
-                <span className="mode-corner mode-corner-tl"></span>
-                <span className="mode-corner mode-corner-br"></span>
-                CREATE ROOM
-              </button>
-              <button 
-                className={`mode-btn-tech ${mode === 'join' ? 'active' : ''}`}
-                onClick={() => setMode('join')}
-              >
-                <span className="mode-corner mode-corner-tl"></span>
-                <span className="mode-corner mode-corner-br"></span>
-                JOIN ROOM
-              </button>
-            </div>
-
-            {/* Input Fields */}
             <div className="input-section-tech">
               <div className="input-group-tech">
-                <label className="input-label-tech">PLAYER.NAME</label>
-                <input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="input-tech"
-                  autoFocus
-                />
-              </div>
-
-              {mode === 'join' && (
-                <div className="input-group-tech">
-                  <label className="input-label-tech">ROOM.ID</label>
-                  <input
-                    type="text"
-                    placeholder="Enter 6-digit code"
-                    value={roomId}
-                    onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-                    onKeyPress={handleKeyPress}
-                    className="input-tech"
-                    maxLength={6}
-                  />
+                <label className="input-label-tech">PLAYERS</label>
+                <div className="player-selector">
+                  {[2, 3, 4].map(count => (
+                    <button
+                      key={count}
+                      onClick={() => setPlayerCount(count)}
+                      className={`player-count-btn ${playerCount === count ? 'active' : ''}`}
+                    >
+                      {count}
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
             </div>
 
-            <button 
-              onClick={mode === 'create' ? createRoom : joinRoom} 
-              className="btn-tech-primary"
-              disabled={!username.trim() || (mode === 'join' && !roomId.trim())}
-            >
+            <button onClick={startGame} className="btn-tech-primary">
               <span className="btn-corner btn-corner-tl"></span>
               <span className="btn-corner btn-corner-br"></span>
-              {mode === 'create' ? 'CREATE ROOM' : 'JOIN ROOM'}
+              START GAME
             </button>
 
             <div className="deco-line-bottom">
@@ -164,7 +105,7 @@ export default function HyperPolyHome() {
           </div>
           <div className="tech-render">
             <span className="render-text">◐ GAME MODE</span>
-            <span className="render-frame">MULTIPLAYER</span>
+            <span className="render-frame">SINGLE PLAYER</span>
           </div>
         </div>
       </div>
