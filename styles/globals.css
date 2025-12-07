@@ -1614,6 +1614,29 @@ body {
   cursor: not-allowed;
 }
 
+.btn-tech-secondary {
+  position: relative;
+  padding: 0.875rem 1.5rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.1em;
+}
+
+.btn-tech-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: white;
+}
+
+.btn-tech-secondary:hover:not(:disabled) .btn-corner {
+  opacity: 1;
+}
+
 .btn-corner {
   position: absolute;
   width: 8px;
@@ -2190,4 +2213,605 @@ body {
   opacity: 0.3;
   cursor: not-allowed;
   border-color: rgba(255, 255, 255, 0.3);
+}
+
+
+/* ============================================
+   HYPERPOLY GAME STYLES
+   ============================================ */
+
+.hyperpoly-container {
+  position: relative;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.hyperpoly-game-content {
+  position: relative;
+  z-index: 10;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.hyperpoly-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Game Board */
+.hyperpoly-board-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hyperpoly-board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  gap: 4px;
+  width: 600px;
+  height: 600px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.board-space {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: all 0.2s;
+}
+
+.board-space:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.05);
+}
+
+.corner-space {
+  grid-column: span 2;
+  grid-row: span 2;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.space-number {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Courier New', monospace;
+}
+
+.space-name {
+  font-size: 0.5rem;
+  color: white;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+}
+
+.space-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.space-price {
+  font-size: 0.45rem;
+  color: #4caf50;
+  font-family: 'Courier New', monospace;
+}
+
+.space-upgrade {
+  font-size: 0.6rem;
+}
+
+.space-owner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid white;
+}
+
+.space-players {
+  position: absolute;
+  bottom: 2px;
+  display: flex;
+  gap: 2px;
+}
+
+.player-token {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  color: white;
+  font-weight: bold;
+  border: 1px solid white;
+  font-family: 'Courier New', monospace;
+}
+
+.player-token.active {
+  border: 2px solid yellow;
+  box-shadow: 0 0 8px yellow;
+}
+
+/* Side Panel */
+.hyperpoly-side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.player-panel,
+.action-panel {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-title {
+  color: white;
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.15em;
+  font-weight: bold;
+}
+
+/* Player Cards */
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.75rem;
+  transition: all 0.2s;
+}
+
+.player-card.active {
+  border-color: #4caf50;
+  background: rgba(76, 175, 80, 0.1);
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.player-card.bankrupt {
+  opacity: 0.5;
+  border-color: #f44336;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.player-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  border: 2px solid white;
+}
+
+.player-info {
+  flex: 1;
+}
+
+.player-name {
+  color: white;
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+}
+
+.bankrupt-badge {
+  color: #f44336;
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+  margin-top: 2px;
+}
+
+.player-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.625rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+}
+
+.stat-value {
+  color: white;
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+/* Action Panel */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  position: relative;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  border: 1px solid white;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.1em;
+  border-radius: 4px;
+}
+
+.action-btn:hover:not(:disabled) {
+  background: white;
+  color: black;
+}
+
+.action-btn:hover:not(:disabled) .btn-corner {
+  opacity: 1;
+}
+
+.action-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.action-btn-primary {
+  border-color: #2196f3;
+  color: #2196f3;
+}
+
+.action-btn-primary:hover:not(:disabled) {
+  background: #2196f3;
+  color: white;
+}
+
+.action-btn-success {
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.action-btn-success:hover:not(:disabled) {
+  background: #4caf50;
+  color: white;
+}
+
+.action-btn-secondary {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dice-rolling {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: white;
+  font-family: 'Courier New', monospace;
+}
+
+.dice-animation {
+  font-size: 3rem;
+  animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Action Popup */
+.action-popup {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #4caf50;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-popup h3 {
+  color: #4caf50;
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-align: center;
+}
+
+.property-name {
+  color: white;
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  margin: 0;
+}
+
+.property-price,
+.property-rent {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  margin: 0;
+}
+
+.popup-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.info-message {
+  color: white;
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  margin: 0;
+}
+
+/* AI Turn */
+.ai-turn {
+  padding: 1rem;
+}
+
+.ai-thinking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ai-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  border: 2px solid white;
+  animation: pulse 1.5s infinite;
+}
+
+.ai-thinking p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  margin: 0;
+}
+
+/* Game Over Modal */
+.game-over-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.game-over-content {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid #4caf50;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  backdrop-filter: blur(10px);
+}
+
+.game-over-content h2 {
+  color: #4caf50;
+  font-size: 1.5rem;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 0.1em;
+}
+
+.winner-info {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.winner-name {
+  color: white;
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+  margin: 0 0 0.5rem 0;
+  font-weight: bold;
+}
+
+.winner-worth {
+  color: #4caf50;
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  margin: 0;
+}
+
+.rankings {
+  margin-bottom: 1.5rem;
+}
+
+.rankings h3 {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: 0.1em;
+}
+
+.rank-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.game-over-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Player Selector */
+.player-selector {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.player-count-btn {
+  flex: 1;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.player-count-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+.player-count-btn.active {
+  background: white;
+  color: black;
+  border-color: white;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .hyperpoly-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hyperpoly-board {
+    width: 500px;
+    height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hyperpoly-board {
+    width: 400px;
+    height: 400px;
+    gap: 3px;
+    padding: 6px;
+  }
+
+  .board-space {
+    padding: 2px;
+  }
+
+  .space-name {
+    font-size: 0.4rem;
+  }
+
+  .player-token {
+    width: 10px;
+    height: 10px;
+    font-size: 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hyperpoly-board {
+    width: 320px;
+    height: 320px;
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .space-name {
+    font-size: 0.35rem;
+  }
+
+  .player-token {
+    width: 8px;
+    height: 8px;
+    font-size: 0.35rem;
+  }
 }

@@ -151,6 +151,17 @@ export default function Home() {
               {mode === 'create' ? 'INITIALIZE ROOM' : 'CONNECT TO ROOM'}
             </button>
 
+            {/* HyperPoly Link */}
+            <button 
+              onClick={() => router.push('/hyperpoly')}
+              className="btn-tech-secondary"
+              style={{ marginTop: '0.5rem' }}
+            >
+              <span className="btn-corner btn-corner-tl"></span>
+              <span className="btn-corner btn-corner-br"></span>
+              🎲 PLAY HYPERPOLY
+            </button>
+
             {/* Bottom technical notation */}
             <div className="deco-line-bottom">
               <span className="deco-symbol">∞</span>
