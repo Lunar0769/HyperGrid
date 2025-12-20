@@ -25,10 +25,8 @@ export default function HyperPolyRoom() {
   useEffect(() => {
     if (!roomId || !username) return
 
-    // Initialize socket connection
-    const socketUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://hypergrid-backend-latest.onrender.com'
-      : 'http://localhost:3001'
+    // Use deployed Render backend
+    const socketUrl = 'https://hypergrid-u9d2.onrender.com'
     
     const newSocket = io(socketUrl, {
       transports: ['websocket', 'polling'],

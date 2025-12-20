@@ -30,8 +30,8 @@ export default function Room() {
   useEffect(() => {
     if (!roomId || !username) return
 
-    // Use the same backend URL for both games
-    const socketUrl = 'https://hypergrid-backend-latest.onrender.com'
+    // Use deployed Render backend
+    const socketUrl = 'https://hypergrid-u9d2.onrender.com'
     console.log('Connecting to WebSocket server:', socketUrl)
     const newSocket = io(socketUrl)
     setSocket(newSocket)
