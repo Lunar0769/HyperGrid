@@ -23,6 +23,7 @@ const io = new Server(httpServer, {
 
 // Game state storage
 const rooms = new Map()
+const hyperpolyRooms = new Map()
 
 class GameRoom {
   constructor(roomId, hostId) {
@@ -259,6 +260,59 @@ class GameRoom {
   }
 }
 
+class HyperPolyRoom {
+  constructor(roomId, hostId) {
+    this.roomId = roomId
+    this.hostId = hostId
+    this.players = new Map()
+    this.gameStarted = false
+    this.gameState = null
+  }
+
+  addPlayer(socketId, username, isHost = false) {
+    if (this.players.size >= 4) return false // Max 4 players
+    const player = { id: socketId, username, isHost }
+    this.players.set(socketId, player)
+    if (isHost) {
+      this.hostId = socketId
+    }
+    return true
+  }
+
+  removePlayer(socketId) {
+    this.players.delete(socketId)
+    // If host leaves, assign new host
+    if (this.hostId === socketId && this.players.size > 0) {
+      this.hostId = this.players.keys().next().value
+      const newHost = this.players.get(this.hostId)
+      if (newHost) newHost.isHost = true
+    }
+  }
+
+  startGame(initialGameState) {
+    if (this.players.size >= 2 && !this.gameStarted) {
+      this.gameStarted = true
+      this.gameState = initialGameState
+      return true
+    }
+    return false
+  }
+
+  updateGameState(newState) {
+    this.gameState = newState
+  }
+
+  getRoomData() {
+    const host = Array.from(this.players.values()).find(p => p.isHost)
+    return {
+      players: Array.from(this.players.values()).map(p => p.username),
+      host: host?.username || null,
+      gameStarted: this.gameStarted,
+      playerCount: this.players.size
+    }
+  }
+}
+
 io.on('connection', (socket) => {
   console.log('✅ User connected:', socket.id, 'from origin:', socket.handshake.headers.origin)
 
@@ -345,6 +399,72 @@ io.on('connection', (socket) => {
           io.to(socket.roomId).emit('roomUpdate', room.getRoomData())
         }
       }
+    }
+
+    if (socket.hyperpolyRoomId) {
+      const room = hyperpolyRooms.get(socket.hyperpolyRoomId)
+      if (room) {
+        room.removePlayer(socket.id)
+        
+        // If room is empty, delete it
+        if (room.players.size === 0) {
+          hyperpolyRooms.delete(socket.hyperpolyRoomId)
+        } else {
+          // Update remaining clients
+          io.to(socket.hyperpolyRoomId).emit('hyperpolyRoomUpdate', room.getRoomData())
+        }
+      }
+    }
+  })
+
+  // HyperPoly Events
+  socket.on('joinHyperPolyRoom', ({ roomId, username, isHost }) => {
+    console.log('📥 joinHyperPolyRoom received:', { roomId, username, isHost, socketId: socket.id })
+    let room = hyperpolyRooms.get(roomId)
+    
+    if (!room) {
+      // Create new room
+      room = new HyperPolyRoom(roomId, socket.id)
+      hyperpolyRooms.set(roomId, room)
+      room.addPlayer(socket.id, username, true)
+    } else {
+      // Join existing room
+      if (!room.addPlayer(socket.id, username, false)) {
+        socket.emit('error', { message: 'Room is full' })
+        return
+      }
+    }
+
+    socket.join(roomId)
+    socket.hyperpolyRoomId = roomId
+
+    // Send room update to all clients in room
+    io.to(roomId).emit('hyperpolyRoomUpdate', room.getRoomData())
+  })
+
+  socket.on('startHyperPolyGame', ({ roomId, gameState }) => {
+    const room = hyperpolyRooms.get(roomId)
+    if (room && room.hostId === socket.id) {
+      if (room.startGame(gameState)) {
+        io.to(roomId).emit('hyperpolyGameStarted', gameState)
+      }
+    }
+  })
+
+  socket.on('hyperpolyGameUpdate', ({ roomId, gameState }) => {
+    const room = hyperpolyRooms.get(roomId)
+    if (room) {
+      room.updateGameState(gameState)
+      // Broadcast to all players except sender
+      socket.to(roomId).emit('hyperpolyGameStateUpdate', gameState)
+    }
+  })
+
+  socket.on('hyperpolyPlayerAction', ({ roomId, action, data }) => {
+    const room = hyperpolyRooms.get(roomId)
+    if (room) {
+      // Broadcast player action to all other players
+      socket.to(roomId).emit('hyperpolyPlayerAction', { action, data, playerId: socket.id })
     }
   })
 })

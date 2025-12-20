@@ -10,6 +10,8 @@ body {
   color: white;
   overflow-x: hidden;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 /* Removed old particle canvas */
@@ -1256,8 +1258,7 @@ body {
 .home-container-tech {
   position: relative;
   min-height: 100vh;
-  max-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   background: #000;
 }
 
@@ -1269,6 +1270,7 @@ body {
   right: 0;
   z-index: 20;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  height: 4rem;
 }
 
 .tech-header-content {
@@ -1278,6 +1280,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 100%;
 }
 
 .tech-logo {
@@ -1375,10 +1378,10 @@ body {
   position: relative;
   z-index: 10;
   display: flex;
-  height: 100vh;
+  min-height: calc(100vh - 8rem);
   align-items: center;
   padding-top: 4rem;
-  padding-bottom: 6rem;
+  padding-bottom: 4rem;
 }
 
 .content-wrapper-tech {
@@ -1386,11 +1389,15 @@ body {
   margin: 0 auto;
   padding: 0 2rem;
   width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .content-inner-tech {
   max-width: 32rem;
   position: relative;
+  width: 100%;
 }
 
 /* Decorative Top Line */
@@ -1694,6 +1701,7 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
+  height: 3rem;
 }
 
 .tech-footer-content {
@@ -1703,6 +1711,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 100%;
 }
 
 .tech-status {
@@ -1765,6 +1774,10 @@ body {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
+  .home-container-tech {
+    min-height: 100vh;
+  }
+
   .tech-coords {
     display: none;
   }
@@ -2231,20 +2244,24 @@ body {
 .hyperpoly-game-content {
   position: relative;
   z-index: 10;
-  padding-top: 4rem;
+  padding-top: 5rem;
   padding-bottom: 4rem;
-  height: 100vh;
-  overflow-y: auto;
+  min-height: calc(100vh - 9rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hyperpoly-layout {
   max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   padding: 1rem;
   display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 1.5rem;
-  align-items: start;
+  grid-template-columns: auto 350px;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Game Board */
@@ -2256,12 +2273,13 @@ body {
 
 .hyperpoly-board {
   position: relative;
-  width: 700px;
-  height: 700px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  width: 650px;
+  height: 650px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 3px solid rgba(255, 255, 255, 0.4);
   border-radius: 8px;
   margin: 0 auto;
+  flex-shrink: 0;
 }
 
 .board-track {
@@ -2274,15 +2292,15 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 100px;
+  height: 90px;
   flex-direction: row;
 }
 
 .board-track.right {
   right: 0;
-  top: 100px;
-  bottom: 100px;
-  width: 100px;
+  top: 90px;
+  bottom: 90px;
+  width: 90px;
   flex-direction: column;
 }
 
@@ -2290,24 +2308,24 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 100px;
+  height: 90px;
   flex-direction: row-reverse;
 }
 
 .board-track.left {
   left: 0;
-  top: 100px;
-  bottom: 100px;
-  width: 100px;
+  top: 90px;
+  bottom: 90px;
+  width: 90px;
   flex-direction: column-reverse;
 }
 
 .board-center {
   position: absolute;
-  top: 100px;
-  left: 100px;
-  right: 100px;
-  bottom: 100px;
+  top: 90px;
+  left: 90px;
+  right: 90px;
+  bottom: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2315,8 +2333,8 @@ body {
   text-align: center;
   color: white;
   font-family: 'Courier New', monospace;
-  background: rgba(255, 255, 255, 0.02);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.15);
 }
 
 .board-center h2 {
@@ -2350,29 +2368,29 @@ body {
 
 .board-track.bottom .board-space,
 .board-track.top .board-space {
-  min-width: 60px;
-  height: 100px;
+  min-width: 55px;
+  height: 90px;
 }
 
 .board-track.left .board-space,
 .board-track.right .board-space {
-  width: 100px;
-  min-height: 60px;
+  width: 90px;
+  min-height: 55px;
 }
 
 .board-space:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .corner-space {
-  width: 100px !important;
-  height: 100px !important;
-  min-width: 100px !important;
-  min-height: 100px !important;
-  font-size: 0.75rem;
+  width: 90px !important;
+  height: 90px !important;
+  min-width: 90px !important;
+  min-height: 90px !important;
+  font-size: 0.7rem;
   font-weight: bold;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .space-number {
@@ -2863,18 +2881,65 @@ body {
 @media (max-width: 1024px) {
   .hyperpoly-layout {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .hyperpoly-board {
-    width: 500px;
-    height: 500px;
+    width: 550px;
+    height: 550px;
+  }
+
+  .board-track.bottom,
+  .board-track.top {
+    height: 75px;
+  }
+
+  .board-track.left,
+  .board-track.right {
+    width: 75px;
+    top: 75px;
+    bottom: 75px;
+  }
+
+  .board-center {
+    top: 75px;
+    left: 75px;
+    right: 75px;
+    bottom: 75px;
+  }
+
+  .board-track.bottom .board-space,
+  .board-track.top .board-space {
+    min-width: 45px;
+    height: 75px;
+  }
+
+  .board-track.left .board-space,
+  .board-track.right .board-space {
+    width: 75px;
+    min-height: 45px;
+  }
+
+  .corner-space {
+    width: 75px !important;
+    height: 75px !important;
+    min-width: 75px !important;
+    min-height: 75px !important;
   }
 }
 
 @media (max-width: 768px) {
+  .hyperpoly-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+
   .hyperpoly-board {
-    width: 550px;
-    height: 550px;
+    width: 100%;
+    max-width: 550px;
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .board-track.bottom,
@@ -2936,12 +3001,18 @@ body {
   .board-center p {
     font-size: 0.875rem;
   }
+
+  .hyperpoly-side-panel {
+    order: -1;
+  }
 }
 
 @media (max-width: 480px) {
   .hyperpoly-board {
-    width: 420px;
-    height: 420px;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .board-track.bottom,
@@ -3013,6 +3084,37 @@ body {
   .board-center p {
     font-size: 0.7rem;
   }
+
+  .hyperpoly-game-content {
+    padding-top: 4rem;
+    padding-bottom: 3rem;
+  }
+
+  .player-panel,
+  .action-panel {
+    padding: 0.75rem;
+  }
+
+  .panel-title {
+    font-size: 0.7rem;
+  }
+
+  .player-card {
+    padding: 0.5rem;
+  }
+
+  .player-name {
+    font-size: 0.75rem;
+  }
+
+  .stat-value {
+    font-size: 0.75rem;
+  }
+
+  .action-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+  }
 }
 
 
@@ -3024,7 +3126,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
 }
 
 .game-card {
@@ -3114,5 +3217,450 @@ body {
 
   .game-description {
     font-size: 0.75rem;
+  }
+
+  .game-selection {
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+
+/* ============================================
+   HYPERPOLY WAITING LOBBY
+   ============================================ */
+
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #000;
+  color: white;
+  font-family: 'Courier New', monospace;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-content h2 {
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.waiting-lobby {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 2rem;
+}
+
+.lobby-content {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 3rem 2.5rem;
+  max-width: 600px;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  text-align: center;
+  position: relative;
+}
+
+.lobby-content h2 {
+  color: white;
+  font-size: 2rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.2em;
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+}
+
+.room-code {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+
+.room-code span {
+  color: #64b5f6;
+  font-size: 2.5rem;
+  font-weight: bold;
+  letter-spacing: 0.4em;
+  display: block;
+  margin-top: 0.75rem;
+  text-shadow: 0 0 10px rgba(100, 181, 246, 0.5);
+}
+
+.players-waiting {
+  margin-bottom: 2.5rem;
+  text-align: left;
+}
+
+.players-waiting h3 {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.15em;
+  margin: 0 0 1.25rem 0;
+  text-transform: uppercase;
+  text-align: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.waiting-player {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s;
+}
+
+.waiting-player:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateX(5px);
+}
+
+.waiting-player .player-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.25rem;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.waiting-player span {
+  color: white;
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  flex: 1;
+  text-align: left;
+  letter-spacing: 0.05em;
+}
+
+.host-badge {
+  padding: 0.35rem 0.75rem;
+  background: rgba(100, 181, 246, 0.2);
+  border: 1px solid #64b5f6;
+  border-radius: 4px;
+  color: #64b5f6;
+  font-size: 0.7rem !important;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.15em;
+  font-weight: bold;
+}
+
+.waiting-message {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.lobby-content .btn-tech-primary {
+  width: 100%;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  transition: all 0.2s;
+}
+
+.lobby-content .btn-tech-primary:hover {
+  background: white;
+  color: black;
+  transform: translateY(-2px);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .lobby-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .lobby-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .room-code span {
+    font-size: 1.8rem;
+    letter-spacing: 0.3em;
+  }
+
+  .waiting-player .player-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .waiting-player span {
+    font-size: 0.875rem;
+  }
+}
+
+/* ============================================
+   3D CHESS QUEEN COMPONENT
+   ============================================ */
+
+.spline-queen-container {
+  position: relative;
+  width: 400px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spline-canvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+/* CSS Fallback 3D Queen */
+.css-queen-fallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  opacity: 0.8;
+}
+
+.queen-crown {
+  position: relative;
+  width: 60px;
+  height: 30px;
+  background: linear-gradient(145deg, #ffffff, #e0e0e0);
+  border-radius: 50% 50% 20% 20%;
+  margin: 0 auto 5px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 5px;
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.crown-point {
+  width: 8px;
+  height: 15px;
+  background: linear-gradient(145deg, #ffffff, #d0d0d0);
+  border-radius: 50% 50% 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.crown-point:nth-child(3) {
+  height: 20px;
+  width: 10px;
+}
+
+.queen-head {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(145deg, #ffffff, #e0e0e0);
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.3),
+    inset 0 3px 6px rgba(255, 255, 255, 0.5);
+}
+
+.queen-neck {
+  width: 30px;
+  height: 20px;
+  background: linear-gradient(145deg, #ffffff, #e0e0e0);
+  margin: 0 auto 5px;
+  border-radius: 15px;
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.queen-body {
+  width: 40px;
+  height: 80px;
+  background: linear-gradient(145deg, #ffffff, #e0e0e0);
+  margin: 0 auto 5px;
+  border-radius: 20px 20px 5px 5px;
+  position: relative;
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    inset 0 4px 8px rgba(255, 255, 255, 0.5);
+}
+
+.queen-body::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: -10px;
+  right: -10px;
+  height: 40px;
+  background: linear-gradient(145deg, #ffffff, #e0e0e0);
+  border-radius: 30px;
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.queen-base {
+  width: 80px;
+  height: 20px;
+  background: linear-gradient(145deg, #ffffff, #e0e0e0);
+  margin: 0 auto;
+  border-radius: 50%;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.4),
+    inset 0 3px 6px rgba(255, 255, 255, 0.5);
+}
+
+/* Animation */
+.css-queen-fallback {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0px) rotateY(0deg);
+  }
+  25% {
+    transform: translate(-50%, -50%) translateY(-10px) rotateY(90deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(0px) rotateY(180deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) translateY(-10px) rotateY(270deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .spline-queen-container {
+    width: 300px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .spline-queen-container {
+    display: none;
+  }
+}
+
+
+/* ============================================
+   HYPERGRID PAGE LAYOUT WITH 3D MODEL
+   ============================================ */
+
+.hypergrid-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  align-items: center;
+}
+
+.hypergrid-form-section {
+  max-width: 600px;
+}
+
+.hypergrid-model-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hypergrid-model-section::before {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(100, 181, 246, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .hypergrid-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hypergrid-model-section {
+    order: -1;
+  }
+
+  .spline-queen-container {
+    width: 300px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hypergrid-layout {
+    padding: 0 1rem;
+  }
+
+  .hypergrid-model-section {
+    display: none;
   }
 }

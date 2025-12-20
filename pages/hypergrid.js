@@ -2,22 +2,22 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import ParticleBackground from '../components/ParticleBackground'
 
-export default function HyperPolyHome() {
-  const router = useRouter()
+export default function HyperGridHome() {
   const [username, setUsername] = useState('')
   const [roomId, setRoomId] = useState('')
   const [mode, setMode] = useState('create') // 'create' or 'join'
+  const router = useRouter()
 
   const createRoom = () => {
     if (username.trim()) {
       const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase()
-      router.push(`/hyperpoly/room/${newRoomId}?username=${encodeURIComponent(username)}&host=true`)
+      router.push(`/room/${newRoomId}?username=${encodeURIComponent(username)}&host=true`)
     }
   }
 
   const joinRoom = () => {
     if (username.trim() && roomId.trim()) {
-      router.push(`/hyperpoly/room/${roomId.toUpperCase()}?username=${encodeURIComponent(username)}`)
+      router.push(`/room/${roomId.toUpperCase()}?username=${encodeURIComponent(username)}`)
     }
   }
 
@@ -39,9 +39,9 @@ export default function HyperPolyHome() {
       <div className="tech-header">
         <div className="tech-header-content">
           <div className="tech-logo">
-            <div className="tech-logo-text">HYPERPOLY</div>
+            <div className="tech-logo-text">HYPERGRID</div>
             <div className="tech-divider"></div>
-            <span className="tech-est">MINI MONOPOLY</span>
+            <span className="tech-est">ULTIMATE TIC TAC TOE</span>
           </div>
           <button onClick={() => router.push('/')} className="btn-tech-header">
             <span className="btn-corner btn-corner-tl"></span>
@@ -51,7 +51,7 @@ export default function HyperPolyHome() {
         </div>
       </div>
 
-      {/* Corner Frames */}
+      {/* Corner Frame Accents */}
       <div className="corner-frame corner-tl"></div>
       <div className="corner-frame corner-tr"></div>
       <div className="corner-frame corner-bl"></div>
@@ -61,28 +61,32 @@ export default function HyperPolyHome() {
       <div className="home-content-tech">
         <div className="content-wrapper-tech">
           <div className="content-inner-tech">
+            {/* Top decorative line */}
             <div className="deco-line-top">
               <div className="deco-line-short"></div>
               <span className="deco-number">001</span>
               <div className="deco-line-long"></div>
             </div>
 
+            {/* Title */}
             <div className="title-section-tech">
               <div className="dither-accent"></div>
               <h1 className="title-tech">
-                FAST-PACED
-                <span className="title-sub-tech">PROPERTY EMPIRE</span>
+                ULTIMATE
+                <span className="title-sub-tech">TIC TAC TOE</span>
               </h1>
             </div>
 
+            {/* Decorative dots */}
             <div className="deco-dots">
               {Array.from({ length: 40 }).map((_, i) => (
                 <div key={i} className="deco-dot"></div>
               ))}
             </div>
 
+            {/* Description */}
             <div className="description-tech">
-              <p>10 minute games • 40 spaces • 12 properties • Multiplayer rooms</p>
+              <p>9 boards • Strategic gameplay • Real-time multiplayer</p>
             </div>
 
             {/* Mode Selector */}
@@ -136,6 +140,7 @@ export default function HyperPolyHome() {
               )}
             </div>
 
+            {/* Action Button */}
             <button 
               onClick={mode === 'create' ? createRoom : joinRoom} 
               className="btn-tech-primary"
@@ -146,10 +151,11 @@ export default function HyperPolyHome() {
               {mode === 'create' ? 'CREATE ROOM' : 'JOIN ROOM'}
             </button>
 
+            {/* Bottom technical notation */}
             <div className="deco-line-bottom">
               <span className="deco-symbol">∞</span>
               <div className="deco-line-long"></div>
-              <span className="deco-text">HYPERPOLY</span>
+              <span className="deco-text">HYPERGRID</span>
             </div>
           </div>
         </div>

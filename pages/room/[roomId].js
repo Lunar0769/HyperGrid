@@ -30,8 +30,8 @@ export default function Room() {
   useEffect(() => {
     if (!roomId || !username) return
 
-    // Temporarily hardcode the URL to avoid environment variable issues
-    const socketUrl = 'https://hypergrid-u9d2.onrender.com'
+    // Use the same backend URL for both games
+    const socketUrl = 'https://hypergrid-backend-latest.onrender.com'
     console.log('Connecting to WebSocket server:', socketUrl)
     const newSocket = io(socketUrl)
     setSocket(newSocket)
@@ -207,7 +207,7 @@ export default function Room() {
                 <div 
                   key={i} 
                   className="status-bar"
-                  style={{ height: `${Math.random() * 8 + 4}px` }}
+                  style={{ height: `${4 + (i % 4) * 2}px` }}
                 ></div>
               ))}
             </div>
