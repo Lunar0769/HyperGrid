@@ -4,12 +4,14 @@ import io from 'socket.io-client'
 import ParticleBackground from '../../components/ParticleBackground'
 import GameBoard from '../../components/GameBoard'
 import RoomInfo from '../../components/RoomInfo'
+import ConnectionLoader from '../../components/ConnectionLoader'
 
 export default function Room() {
   const router = useRouter()
   const { roomId, username, host } = router.query
 
   const [socket, setSocket] = useState(null)
+  const [connected, setConnected] = useState(false)
   const [gameState, setGameState] = useState({
     boards: Array.from({ length: 9 }, () => Array(9).fill(null)),
     subBoardWinners: Array(9).fill(null),
@@ -45,10 +47,17 @@ export default function Room() {
 
     newSocket.on('connect', () => {
       console.log('✅ Connected to WebSocket server')
+      setConnected(true)
     })
 
     newSocket.on('connect_error', (error) => {
       console.error('❌ WebSocket connection error:', error)
+      setConnected(false)
+    })
+
+    newSocket.on('disconnect', () => {
+      console.log('Disconnected from server')
+      setConnected(false)
     })
 
     newSocket.on('roomUpdate', (data) => {
@@ -100,7 +109,11 @@ export default function Room() {
   }
 
   if (!roomId || !username) {
-    return <div>Loading...</div>
+    return <ConnectionLoader message="Loading room..." />
+  }
+
+  if (!connected) {
+    return <ConnectionLoader message="Connecting to server..." />
   }
 
   return (

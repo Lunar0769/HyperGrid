@@ -1,13 +1,28 @@
 export default function GameBoard({ board, players, currentPlayer }) {
   const getSpaceColor = (space) => {
     if (space.type === 'property') {
-      if (space.tier === 'low') return '#4caf50'
-      if (space.tier === 'mid') return '#ff9800'
-      if (space.tier === 'high') return '#f44336'
+      // Use actual Monopoly color groups
+      const colorMap = {
+        'brown': '#8B4513',
+        'lightblue': '#87CEEB',
+        'pink': '#FF69B4',
+        'orange': '#FFA500',
+        'red': '#FF0000',
+        'yellow': '#FFFF00',
+        'green': '#008000',
+        'darkblue': '#000080'
+      }
+      return colorMap[space.color] || '#424242'
     }
-    if (space.type === 'chance') return '#9c27b0'
-    if (space.type === 'go') return '#2196f3'
-    if (space.type === 'jail') return '#607d8b'
+    if (space.type === 'railroad') return '#000000'
+    if (space.type === 'utility') return '#FFFFFF'
+    if (space.type === 'chance') return '#FF6B35'
+    if (space.type === 'community') return '#4ECDC4'
+    if (space.type === 'go') return '#00FF00'
+    if (space.type === 'jail') return '#FFA500'
+    if (space.type === 'parking') return '#FF0000'
+    if (space.type === 'goToJail') return '#FF0000'
+    if (space.type === 'tax') return '#000000'
     return '#424242'
   }
 
@@ -32,15 +47,46 @@ export default function GameBoard({ board, players, currentPlayer }) {
         <div className="space-name">{space.name}</div>
         
         {space.type === 'property' && (
+          <>
+            <div 
+              className="property-color-bar"
+              style={{ backgroundColor: getSpaceColor(space) }}
+            ></div>
+            <div className="space-info">
+              <div className="space-price">${space.buyPrice}</div>
+              {space.houses > 0 && space.houses < 5 && (
+                <div className="space-houses">
+                  {'🏠'.repeat(space.houses)}
+                </div>
+              )}
+              {space.houses === 5 && (
+                <div className="space-hotel">🏨</div>
+              )}
+              {space.owner !== null && (
+                <div 
+                  className="space-owner"
+                  style={{ backgroundColor: getPlayerColor(space.owner) }}
+                ></div>
+              )}
+            </div>
+          </>
+        )}
+
+        {(space.type === 'railroad' || space.type === 'utility') && (
           <div className="space-info">
             <div className="space-price">${space.buyPrice}</div>
-            {space.upgraded && <div className="space-upgrade">🏠</div>}
             {space.owner !== null && (
               <div 
                 className="space-owner"
                 style={{ backgroundColor: getPlayerColor(space.owner) }}
               ></div>
             )}
+          </div>
+        )}
+
+        {space.type === 'tax' && (
+          <div className="space-info">
+            <div className="space-price">${space.amount}</div>
           </div>
         )}
         
@@ -61,38 +107,54 @@ export default function GameBoard({ board, players, currentPlayer }) {
     )
   }
 
-  // Split board into 4 sides (Monopoly style)
-  const bottomRow = board.slice(0, 11) // 0-10
-  const rightColumn = board.slice(11, 20) // 11-19
-  const topRow = board.slice(20, 31) // 20-30
-  const leftColumn = board.slice(31, 40) // 31-39
+  // Proper Monopoly board layout - clockwise from GO
+  // Bottom row: 0-10 (left to right)
+  const bottomRow = board.slice(0, 11) // GO to Jail (0-10)
+  
+  // Right column: 11-19 (bottom to top - REVERSED for correct sequence)
+  const rightColumn = board.slice(11, 20).reverse() // 19-11 (reversed for bottom-to-top display)
+  
+  // Top row: 20-30 (right to left)
+  const topRow = board.slice(20, 31).reverse() // 30-20 (reversed for right-to-left display)
+  
+  // Left column: 31-39 (top to bottom - NOT REVERSED)
+  const leftColumn = board.slice(31, 40) // 31-39 (top-to-bottom display)
 
   return (
     <div className="hyperpoly-board">
-      {/* Bottom Row */}
-      <div className="board-track bottom">
-        {bottomRow.map((space, idx) => renderSpace(space, idx))}
-      </div>
-
-      {/* Right Column */}
-      <div className="board-track right">
-        {rightColumn.map((space, idx) => renderSpace(space, idx + 11))}
-      </div>
-
-      {/* Top Row */}
+      {/* Top Row (spaces 30-20, displayed right to left) */}
       <div className="board-track top">
-        {topRow.map((space, idx) => renderSpace(space, idx + 20))}
+        {topRow.map((space, idx) => {
+          const actualIndex = 30 - idx // Convert back to actual board index
+          return renderSpace(space, actualIndex)
+        })}
       </div>
 
-      {/* Left Column */}
+      {/* Left Column (spaces 31-39, displayed top to bottom) */}
       <div className="board-track left">
-        {leftColumn.map((space, idx) => renderSpace(space, idx + 31))}
+        {leftColumn.map((space, idx) => {
+          const actualIndex = 31 + idx // Correct sequence: 31, 32, 33...39
+          return renderSpace(space, actualIndex)
+        })}
       </div>
 
       {/* Center */}
       <div className="board-center">
         <h2>HYPERPOLY</h2>
         <p>Mini Monopoly</p>
+      </div>
+
+      {/* Right Column (spaces 11-19, displayed bottom to top) */}
+      <div className="board-track right">
+        {rightColumn.map((space, idx) => {
+          const actualIndex = 19 - idx // Correct sequence: 19, 18, 17...11
+          return renderSpace(space, actualIndex)
+        })}
+      </div>
+
+      {/* Bottom Row (spaces 0-10, displayed left to right) */}
+      <div className="board-track bottom">
+        {bottomRow.map((space, idx) => renderSpace(space, idx))}
       </div>
     </div>
   )

@@ -36,6 +36,38 @@ export default function PlayerPanel({ players, currentPlayer }) {
                   <span className="stat-label">PROPERTIES</span>
                   <span className="stat-value">🏠 {player.properties.length}</span>
                 </div>
+                <div className="stat-item">
+                  <span className="stat-label">RAILROADS</span>
+                  <span className="stat-value">🚂 {player.railroads.length}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">UTILITIES</span>
+                  <span className="stat-value">⚡ {player.utilities.length}</span>
+                </div>
+                {player.houses > 0 && (
+                  <div className="stat-item">
+                    <span className="stat-label">HOUSES</span>
+                    <span className="stat-value">🏠 {player.houses}</span>
+                  </div>
+                )}
+                {player.hotels > 0 && (
+                  <div className="stat-item">
+                    <span className="stat-label">HOTELS</span>
+                    <span className="stat-value">🏨 {player.hotels}</span>
+                  </div>
+                )}
+                {player.getOutOfJailCards > 0 && (
+                  <div className="stat-item">
+                    <span className="stat-label">JAIL CARDS</span>
+                    <span className="stat-value">🗝️ {player.getOutOfJailCards}</span>
+                  </div>
+                )}
+                {player.inJail && (
+                  <div className="stat-item jail-status">
+                    <span className="stat-label">STATUS</span>
+                    <span className="stat-value">🔒 IN JAIL ({player.jailTurns}/3)</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
