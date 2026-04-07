@@ -105,6 +105,30 @@ export default function Home() {
                       🎲 PLAY HYPERPOLY
                     </button>
                   </div>
+
+                  <div className="game-divider">
+                    <div className="divider-line"></div>
+                    <span className="divider-text">OR</span>
+                    <div className="divider-line"></div>
+                  </div>
+
+                  <div className="game-card game-card-mafia">
+                    <div className="game-card-header">
+                      <h3 style={{ color: '#e74c3c' }}>HYPERMAFIA</h3>
+                      <span className="game-badge game-badge-new">NEW</span>
+                    </div>
+                    <p className="game-description">Social Deduction • 4-12 players • AI bots • Night & Day phases</p>
+                    
+                    <button 
+                      onClick={() => router.push('/hypermafia')}
+                      className="btn-tech-primary"
+                      style={{ borderColor: '#e74c3c', color: '#e74c3c' }}
+                    >
+                      <span className="btn-corner btn-corner-tl"></span>
+                      <span className="btn-corner btn-corner-br"></span>
+                      🔪 PLAY HYPERMAFIA
+                    </button>
+                  </div>
                 </div>
 
                 <div className="deco-line-bottom">
