@@ -18,6 +18,7 @@ export default function HyperMafiaRoom() {
   const [myRole, setMyRole] = useState(null)
   const [chatInput, setChatInput] = useState('')
   const [nightTarget, setNightTarget] = useState(null)
+  const [nightActionDone, setNightActionDone] = useState(false)
   const [voteTarget, setVoteTarget] = useState(null)
   const [timer, setTimer] = useState(0)
   const [phaseAnim, setPhaseAnim] = useState(false)
@@ -53,6 +54,8 @@ export default function HyperMafiaRoom() {
         if (prev && prev.phase !== state.phase) {
           setPhaseAnim(true)
           setTimeout(() => setPhaseAnim(false), 1800)
+          // Reset night action state when phase changes
+          if (state.phase === 'night_phase') setNightActionDone(false)
         }
         return state
       })
@@ -116,7 +119,11 @@ export default function HyperMafiaRoom() {
     if (!nightTarget || !me) return
     const actionMap = { [ROLES.MAFIA]: 'mafia_kill', [ROLES.DOCTOR]: 'doctor_save', [ROLES.DETECTIVE]: 'detective_investigate' }
     const action = actionMap[me.role]
-    if (action) { emit('mafiaAction', { playerId: me.id, action, targetId: nightTarget }); setNightTarget(null) }
+    if (action) {
+      emit('mafiaAction', { playerId: me.id, action, targetId: nightTarget })
+      setNightTarget(null)
+      setNightActionDone(true)
+    }
   }
   const handleVote = () => {
     if (!voteTarget || !me) return
@@ -334,7 +341,7 @@ export default function HyperMafiaRoom() {
           {/* NIGHT PHASE */}
           {gameState.phase === PHASES.NIGHT && (
             <div className="mafia-night-scene">
-              {me?.isAlive && myRole !== ROLES.VILLAGER ? (
+              {me?.isAlive && myRole !== ROLES.VILLAGER && !nightActionDone ? (
                 <div className="mafia-night-panel">
                   <h3 className="mafia-night-title">
                     {myRole === ROLES.MAFIA && '🔪 Choose your target'}
@@ -365,7 +372,18 @@ export default function HyperMafiaRoom() {
                     {Array.from({ length: 12 }).map((_, i) => <span key={i} className="star" style={{ '--i': i }}>★</span>)}
                   </div>
                   <div className="mafia-moon-big">🌙</div>
-                  <p>{!me?.isAlive ? 'You are dead. Watch the night unfold.' : 'Night is falling... wait for morning.'}</p>
+                  {nightActionDone && me?.isAlive && myRole !== ROLES.VILLAGER ? (
+                    <p className="night-action-confirmed">✅ Action confirmed. Waiting for others...</p>
+                  ) : !me?.isAlive ? (
+                    <p>You are dead. Watch the night unfold.</p>
+                  ) : (
+                    <p>Night is falling... wait for morning.</p>
+                  )}
+                  {investigateResult && myRole === ROLES.DETECTIVE && (
+                    <div className="mafia-investigate-result" style={{ marginTop: '1rem' }}>
+                      Investigation: {investigateResult.isMafia ? '🔪 MAFIA MEMBER!' : '✅ NOT MAFIA'}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -445,6 +463,32 @@ export default function HyperMafiaRoom() {
                 {isHost && <button className="mafia-btn mafia-btn-primary" style={{ marginTop: '1rem' }} onClick={() => emit('mafiaPhaseChange', { phase: PHASES.NIGHT })}>🌙 START NIGHT</button>}
                 {!isHost && <p className="role-reveal-wait">Waiting for host to start night...</p>}
               </div>
+            </div>
+          )}
+
+          {/* Host override bar — always visible to host during game */}
+          {isHost && gameState.phase !== PHASES.ROLE_ASSIGNMENT && gameState.phase !== PHASES.GAME_END && (
+            <div className="mafia-host-bar">
+              {gameState.phase === PHASES.NIGHT && (
+                <button className="mafia-btn mafia-btn-secondary" onClick={() => emit('mafiaPhaseChange', { phase: PHASES.DAY })}>
+                  ☀️ FORCE END NIGHT
+                </button>
+              )}
+              {gameState.phase === PHASES.DAY && (
+                <button className="mafia-btn mafia-btn-secondary" onClick={() => emit('mafiaPhaseChange', { phase: PHASES.VOTING })}>
+                  🗳️ START VOTING
+                </button>
+              )}
+              {gameState.phase === PHASES.VOTING && (
+                <button className="mafia-btn mafia-btn-secondary" onClick={() => emit('mafiaResolveVotes', {})}>
+                  ⚖️ FORCE RESOLVE
+                </button>
+              )}
+              {gameState.phase === PHASES.RESULT && (
+                <button className="mafia-btn mafia-btn-secondary" onClick={() => emit('mafiaNextRound', {})}>
+                  ➡️ NEXT ROUND
+                </button>
+              )}
             </div>
           )}
         </div>

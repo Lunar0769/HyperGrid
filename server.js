@@ -549,16 +549,30 @@ io.on('connection', (socket) => {
     if (room && room.hostSocketId === socket.id) {
       room.changePhase(phase)
       io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
-      // Trigger bot actions for new phase
       setTimeout(() => room.runBotActions(io), 500)
+      // Restart the auto-timer for the new phase
+      room.startPhaseTimer(io)
     }
   })
 
   socket.on('mafiaAction', ({ roomId, playerId, action, targetId }) => {
     const room = mafiaRooms.get(roomId)
     if (room) {
-      room.submitNightAction(playerId, action, targetId)
+      const allDone = room.submitNightAction(playerId, action, targetId)
       io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
+
+      // If all human night actions are done, advance to day after a short delay
+      if (allDone) {
+        if (room.phaseTimer) clearTimeout(room.phaseTimer)
+        setTimeout(() => {
+          if (room.gameState && room.gameState.phase === 'night_phase') {
+            room.changePhase('day_discussion')
+            io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
+            room.runBotActions(io)
+            room.startPhaseTimer(io)
+          }
+        }, 1500) // small delay so player sees "action confirmed"
+      }
     }
   })
 
@@ -567,6 +581,31 @@ io.on('connection', (socket) => {
     if (room) {
       room.castVote(voterId, targetId)
       io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
+
+      // Auto-resolve if all alive players have voted
+      if (room.gameState && room.gameState.phase === 'voting_phase') {
+        const alive = room.gameState.players.filter(p => p.isAlive)
+        const allVoted = alive.every(p => room.gameState.votes[p.id])
+        if (allVoted) {
+          if (room.phaseTimer) clearTimeout(room.phaseTimer)
+          setTimeout(() => {
+            if (room.gameState && room.gameState.phase === 'voting_phase') {
+              room.resolveVotes()
+              io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
+              if (room.gameState.phase !== 'game_end') {
+                setTimeout(() => {
+                  if (room.gameState && room.gameState.phase === 'result_phase') {
+                    room.nextRound()
+                    io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
+                    room.runBotActions(io)
+                    room.startPhaseTimer(io)
+                  }
+                }, 4000)
+              }
+            }
+          }, 1000)
+        }
+      }
     }
   })
 
@@ -583,6 +622,16 @@ io.on('connection', (socket) => {
     if (room && room.hostSocketId === socket.id) {
       room.resolveVotes()
       io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
+      if (room.gameState.phase !== 'game_end') {
+        setTimeout(() => {
+          if (room.gameState && room.gameState.phase === 'result_phase') {
+            room.nextRound()
+            io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
+            room.runBotActions(io)
+            room.startPhaseTimer(io)
+          }
+        }, 4000)
+      }
     }
   })
 
@@ -592,6 +641,7 @@ io.on('connection', (socket) => {
       room.nextRound()
       io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
       setTimeout(() => room.runBotActions(io), 500)
+      room.startPhaseTimer(io)
     }
   })
 
@@ -808,9 +858,9 @@ class MafiaRoom {
   }
 
   submitNightAction(playerId, action, targetId) {
-    if (!this.gameState || this.gameState.phase !== 'night_phase') return
+    if (!this.gameState || this.gameState.phase !== 'night_phase') return false
     const player = this.gameState.players.find(p => p.id === playerId)
-    if (!player || !player.isAlive) return
+    if (!player || !player.isAlive) return false
 
     if (action === 'mafia_kill' && player.role === 'Mafia') {
       this.gameState.nightActions.mafiaTarget = targetId
@@ -819,6 +869,24 @@ class MafiaRoom {
     } else if (action === 'detective_investigate' && player.role === 'Detective') {
       this.gameState.nightActions.detectiveInvestigate = targetId
     }
+
+    // Check if all human players with night roles have acted
+    return this._allNightActionsDone()
+  }
+
+  _allNightActionsDone() {
+    if (!this.gameState) return false
+    const alive = this.gameState.players.filter(p => p.isAlive)
+    const humanMafia      = alive.filter(p => !p.isBot && p.role === 'Mafia')
+    const humanDoctor     = alive.filter(p => !p.isBot && p.role === 'Doctor')
+    const humanDetective  = alive.filter(p => !p.isBot && p.role === 'Detective')
+
+    const na = this.gameState.nightActions
+    const mafiaOk     = humanMafia.length === 0     || na.mafiaTarget !== null
+    const doctorOk    = humanDoctor.length === 0    || na.doctorSave !== null
+    const detectiveOk = humanDetective.length === 0 || na.detectiveInvestigate !== null
+
+    return mafiaOk && doctorOk && detectiveOk
   }
 
   castVote(voterId, targetId) {
