@@ -695,16 +695,49 @@ class MafiaRoom {
   addBot() {
     const bots = Array.from(this.players.values()).filter(p => p.isBot)
     if (bots.length >= 8 || this.players.size >= 12) return false
+    const personality = ['aggressive', 'passive', 'manipulator'][Math.floor(Math.random() * 3)]
+    const name = this._generateBotName(personality)
     const botId = `bot_${bots.length + 1}_${Date.now()}`
     this.players.set(botId, {
       id: botId,
-      name: `Bot_${bots.length + 1}`,
+      name,
       isBot: true,
       isAlive: true,
       isRevealed: false,
-      role: null
+      role: null,
+      personality,
+      memory: {},
+      _lastMsg: ''
     })
     return true
+  }
+
+  _generateBotName(personality) {
+    const prefix = ['Dark','Neo','Shadow','Silent','Ghost','Alpha','Toxic','Mystic','Void','Neon','Hyper','Rogue']
+    const core   = ['Raven','Nix','Kira','Blaze','Knight','Wolf','Hunter','Zed','Viper','Storm','Byte','Flux']
+    const suffix = ['X','99','_YT','_OP','_47','.exe','_live','_GG','007','_pro']
+    const personalityNames = {
+      aggressive: ['Blaze','Hunter','Toxic','Alpha','Viper','Storm'],
+      passive:    ['Silent','Ghost','Void','Byte'],
+      manipulator:['Mystic','Shadow','Nix','Rogue']
+    }
+    const used = new Set(Array.from(this.players.values()).map(p => p.name))
+    const pool = personalityNames[personality] || []
+    for (let i = 0; i < 10; i++) {
+      let name
+      const r = n => Math.floor(Math.random() * n)
+      if (pool.length && Math.random() < 0.5) {
+        name = pool[r(pool.length)] + suffix[r(suffix.length)]
+      } else {
+        const pat = r(4)
+        if (pat === 0) name = prefix[r(prefix.length)] + core[r(core.length)]
+        else if (pat === 1) name = core[r(core.length)] + suffix[r(suffix.length)]
+        else if (pat === 2) name = prefix[r(prefix.length)] + '_' + core[r(core.length)]
+        else name = core[r(core.length)] + '_' + (Math.floor(Math.random() * 990) + 10)
+      }
+      if (!used.has(name)) return name
+    }
+    return 'Player' + Date.now().toString().slice(-4)
   }
 
   removeBot() {
@@ -745,7 +778,15 @@ class MafiaRoom {
     while (rolePool.length < count) rolePool.push('Villager')
     const shuffled = rolePool.sort(() => Math.random() - 0.5)
 
-    const players = playerList.map((p, i) => ({ ...p, role: shuffled[i], isAlive: true, isRevealed: false }))
+    const players = playerList.map((p, i) => ({
+      ...p,
+      role: shuffled[i],
+      isAlive: true,
+      isRevealed: false,
+      personality: p.isBot ? (p.personality || 'passive') : undefined,
+      memory: p.isBot ? {} : undefined,
+      _lastMsg: p.isBot ? '' : undefined
+    }))
     // Update stored players with roles
     players.forEach(p => this.players.set(p.id, p))
 
@@ -911,36 +952,56 @@ class MafiaRoom {
     if (this.gameState.gameLog.length > 200) this.gameState.gameLog.shift()
   }
 
-  // Run all bot actions for current phase
+  // ── Bot Intelligence Engine ────────────────────────────────────────────────
   runBotActions(io) {
     if (!this.gameState) return
     const bots = this.gameState.players.filter(p => p.isBot && p.isAlive)
 
+    // ── Night phase ──────────────────────────────────────────────────────────
     if (this.gameState.phase === 'night_phase') {
       bots.forEach(bot => {
-        const delay = 1000 + Math.random() * 2000
+        const delay = 1000 + Math.random() * 2500
         setTimeout(() => {
-          this.submitNightAction(bot.id, this._botNightAction(bot), this._botNightTarget(bot))
-          io.to(this.roomId).emit('mafiaGameStateUpdate', this.gameState)
+          if (!this.gameState || this.gameState.phase !== 'night_phase') return
+          const action = this._botNightAction(bot)
+          const target = this._botNightTarget(bot)
+          if (action && target) {
+            this.submitNightAction(bot.id, action, target)
+            io.to(this.roomId).emit('mafiaGameStateUpdate', this.gameState)
+          }
         }, delay)
       })
     }
 
+    // ── Day discussion: multi-message with typing delay ──────────────────────
     if (this.gameState.phase === 'day_discussion') {
+      // Update bot memory from recent chat
+      bots.forEach(bot => {
+        bot.memory = this._updateBotMemory(bot, this.gameState.chatMessages, this.gameState.players)
+      })
+
       bots.forEach((bot, i) => {
-        const delay = 2000 + i * 1500 + Math.random() * 1000
-        setTimeout(() => {
-          if (!this.gameState || this.gameState.phase !== 'day_discussion') return
-          const msg = this._botChatMessage(bot)
-          this.addChatMessage(bot.id, msg)
-          io.to(this.roomId).emit('mafiaGameStateUpdate', this.gameState)
-        }, delay)
+        // Each bot sends 1-3 messages spread across the day phase
+        const msgCount = bot.personality === 'passive' ? 1 : bot.personality === 'aggressive' ? 3 : 2
+        for (let m = 0; m < msgCount; m++) {
+          const baseDelay = 2000 + i * 1200 + m * 4000 + Math.random() * 2000
+          setTimeout(() => {
+            if (!this.gameState || this.gameState.phase !== 'day_discussion') return
+            const msg = this._botChatMessage(bot)
+            if (msg) {
+              bot._lastMsg = msg
+              this.addChatMessage(bot.id, msg)
+              io.to(this.roomId).emit('mafiaGameStateUpdate', this.gameState)
+            }
+          }, baseDelay)
+        }
       })
     }
 
+    // ── Voting phase: suspicion-weighted vote ────────────────────────────────
     if (this.gameState.phase === 'voting_phase') {
       bots.forEach((bot, i) => {
-        const delay = 500 + i * 800 + Math.random() * 500
+        const delay = 800 + i * 600 + Math.random() * 800
         setTimeout(() => {
           if (!this.gameState || this.gameState.phase !== 'voting_phase') return
           const target = this._botVoteTarget(bot)
@@ -962,57 +1023,174 @@ class MafiaRoom {
 
   _botNightTarget(bot) {
     const alive = this.gameState.players.filter(p => p.isAlive)
+    const r = arr => arr[Math.floor(Math.random() * arr.length)]
     if (bot.role === 'Mafia') {
       const targets = alive.filter(p => p.role !== 'Mafia' && p.id !== bot.id)
-      return targets.length ? targets[Math.floor(Math.random() * targets.length)].id : null
+      return targets.length ? r(targets).id : null
     }
     if (bot.role === 'Doctor') {
-      return Math.random() < 0.6 ? bot.id : alive[Math.floor(Math.random() * alive.length)].id
+      return Math.random() < 0.6 ? bot.id : r(alive).id
     }
     if (bot.role === 'Detective') {
       const targets = alive.filter(p => p.id !== bot.id)
-      return targets.length ? targets[Math.floor(Math.random() * targets.length)].id : null
+      return targets.length ? r(targets).id : null
     }
     return null
   }
 
   _botChatMessage(bot) {
     const alive = this.gameState.players.filter(p => p.isAlive && p.id !== bot.id)
-    const roll = Math.random()
-    const accusations = [
-      `I think {t} is acting suspicious.`,
-      `Has anyone noticed {t} being quiet?`,
-      `I don't trust {t} at all.`,
-      `My gut says {t} is mafia.`
-    ]
-    const defenses = [
-      "I'm not mafia, I promise!",
-      "Why would I be suspicious?",
-      "I've been helping this whole time!"
-    ]
-    const general = [
-      "We need to think carefully.",
-      "Something doesn't add up.",
-      "The mafia is among us.",
-      "Let's not rush this decision.",
-      "I was watching last night..."
-    ]
-    if (roll < 0.4 && alive.length > 0) {
-      const t = alive[Math.floor(Math.random() * alive.length)]
-      return accusations[Math.floor(Math.random() * accusations.length)].replace('{t}', t.name)
+    if (!alive.length) return null
+    const recent = this.gameState.chatMessages.slice(-10)
+    const personality = bot.personality || 'passive'
+    const memory = bot.memory || {}
+    const r = arr => arr[Math.floor(Math.random() * arr.length)]
+
+    // Was bot accused recently?
+    const wasAccused = recent.some(m =>
+      m.message && m.message.toLowerCase().includes(bot.name.toLowerCase()) &&
+      /is mafia|sus|i think|definitely|vote them/.test(m.message.toLowerCase())
+    )
+
+    // Highest suspicion target
+    const suspicionScores = alive.map(p => {
+      const mem = memory[p.id] || {}
+      let score = (mem.accusedBy || 0) * 10 + (mem.defensiveCount || 0) * 6 + (mem.silentRounds || 0) * 10
+      score -= (mem.agreedWithMajority || 0) * 5
+      return { p, score: Math.min(100, Math.max(0, score)) }
+    }).sort((a, b) => b.score - a.score)
+    const topSuspect = suspicionScores[0]?.score > 20 ? suspicionScores[0].p : null
+
+    // Majority accusation target
+    const accCounts = {}
+    recent.forEach(m => {
+      if (/is mafia|sus|vote/.test((m.message || '').toLowerCase())) {
+        alive.forEach(p => {
+          if (m.message.toLowerCase().includes(p.name.toLowerCase()))
+            accCounts[p.id] = (accCounts[p.id] || 0) + 1
+        })
+      }
+    })
+    const majorityEntry = Object.entries(accCounts).sort((a, b) => b[1] - a[1])[0]
+    const majorityTarget = majorityEntry && majorityEntry[1] >= 2 ? alive.find(p => p.id === majorityEntry[0]) : null
+
+    const TEMPLATES = {
+      accusation: [
+        `I've been watching {t}, something feels off.`,
+        `{t} is acting strange this round.`,
+        `Why is {t} so quiet? Very suspicious.`,
+        `My gut says {t} is mafia. Vote them.`,
+        `I don't trust {t} at all.`,
+        `{t} hasn't said much. That's suspicious.`,
+        `I'm calling it — {t} is mafia.`,
+      ],
+      defense: [
+        `That doesn't make sense, I voted with you.`,
+        `Why are you targeting me suddenly?`,
+        `If I was mafia, I wouldn't play like this.`,
+        `I'm not mafia, I promise!`,
+        `Think about it — why would mafia act like me?`,
+        `I've been helping this whole time!`,
+      ],
+      agreement: [
+        `Yeah I agree, {t} is suspicious.`,
+        `I was thinking the same thing about {t}.`,
+        `Agreed. Let's vote {t}.`,
+        `That makes sense to me.`,
+      ],
+      doubt: [
+        `Not fully convinced yet.`,
+        `Something feels off but I'm not sure.`,
+        `Maybe, but let's hear more first.`,
+        `I'm not sure about that accusation.`,
+      ],
+      neutral: [
+        `I have a bad feeling about someone here...`,
+        `We need to think carefully before voting.`,
+        `Something doesn't add up.`,
+        `The mafia is among us. I can feel it.`,
+        `Has anyone noticed anything unusual?`,
+        `Let's not rush this decision.`,
+        `I trust most of you... most.`,
+      ]
     }
-    if (roll < 0.65) return defenses[Math.floor(Math.random() * defenses.length)]
-    return general[Math.floor(Math.random() * general.length)]
+
+    let msgType = 'neutral', target = null
+
+    if (wasAccused) {
+      msgType = 'defense'
+    } else if (topSuspect) {
+      msgType = 'accusation'; target = topSuspect
+    } else if (majorityTarget) {
+      if (personality === 'manipulator' && Math.random() < 0.7) {
+        msgType = 'agreement'; target = majorityTarget
+      } else if (personality === 'passive') {
+        msgType = 'doubt'
+      } else {
+        msgType = 'accusation'; target = majorityTarget
+      }
+    } else {
+      const roll = Math.random()
+      if (personality === 'aggressive') {
+        msgType = roll < 0.8 ? 'accusation' : 'neutral'
+        target = r(alive)
+      } else if (personality === 'passive') {
+        if (roll < 0.5) return null
+        msgType = roll < 0.7 ? 'neutral' : 'doubt'
+      } else {
+        msgType = roll < 0.4 ? 'agreement' : roll < 0.7 ? 'accusation' : 'neutral'
+        target = r(alive)
+      }
+    }
+
+    const pool = TEMPLATES[msgType] || TEMPLATES.neutral
+    const lastMsg = bot._lastMsg || ''
+    const filtered = pool.filter(t => t !== lastMsg)
+    const template = r(filtered.length ? filtered : pool)
+    let msg = template.replace('{t}', target ? target.name : r(alive).name)
+    return msg
   }
 
   _botVoteTarget(bot) {
     const alive = this.gameState.players.filter(p => p.isAlive && p.id !== bot.id)
     if (!alive.length) return null
+    const r = arr => arr[Math.floor(Math.random() * arr.length)]
+    const memory = bot.memory || {}
+
+    // Mafia bots vote strategically for non-mafia
     if (bot.role === 'Mafia') {
       const nonMafia = alive.filter(p => p.role !== 'Mafia')
-      if (nonMafia.length) return nonMafia[Math.floor(Math.random() * nonMafia.length)].id
+      if (nonMafia.length) return r(nonMafia).id
     }
-    return alive[Math.floor(Math.random() * alive.length)].id
+
+    // Suspicion-weighted vote (70%) vs random (30%)
+    if (Math.random() < 0.7) {
+      const scored = alive.map(p => {
+        const mem = memory[p.id] || {}
+        return { p, score: (mem.accusedBy || 0) * 10 + (mem.defensiveCount || 0) * 6 }
+      }).sort((a, b) => b.score - a.score)
+      if (scored[0].score > 0) return scored[0].p.id
+    }
+    return r(alive).id
+  }
+
+  _updateBotMemory(bot, messages, players) {
+    const memory = bot.memory || {}
+    messages.slice(-20).forEach(msg => {
+      const text = (msg.message || '').toLowerCase()
+      const isAccusation = /is mafia|sus|i think|definitely|vote them|calling it/.test(text)
+      const isDefense = /not mafia|trust me|why me|i promise|wrong about/.test(text)
+      players.forEach(p => {
+        if (!memory[p.id]) memory[p.id] = {}
+        if (isAccusation && text.includes(p.name.toLowerCase())) {
+          memory[p.id].accusedBy = (memory[p.id].accusedBy || 0) + 1
+        }
+        if (isDefense && msg.playerId === p.id) {
+          memory[p.id].defensiveCount = (memory[p.id].defensiveCount || 0) + 1
+        }
+      })
+    })
+    return memory
   }
 
   getRoomData() {

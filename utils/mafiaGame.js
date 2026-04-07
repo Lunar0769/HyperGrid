@@ -19,37 +19,8 @@ export const ROLES = {
   VILLAGER: 'Villager'
 }
 
-const BOT_NAMES = ['Bot_1', 'Bot_2', 'Bot_3', 'Bot_4', 'Bot_5', 'Bot_6', 'Bot_7', 'Bot_8']
+const BOT_NAMES = [] // replaced by generateBotName()
 
-const BOT_MESSAGES = {
-  day: [
-    "I have a bad feeling about someone here...",
-    "We need to think carefully before voting.",
-    "Something doesn't add up.",
-    "I was watching last night. Very suspicious.",
-    "Let's not rush this decision.",
-    "I trust most of you... most.",
-    "The mafia is among us. I can feel it.",
-    "Has anyone noticed anything unusual?",
-    "We should vote based on behavior, not guesses.",
-    "I'm innocent, I swear on my life."
-  ],
-  accusation: [
-    "I think {target} is acting suspicious.",
-    "Has anyone else noticed {target} being quiet?",
-    "I don't trust {target} at all.",
-    "{target} hasn't said much. That's suspicious.",
-    "My gut says {target} is mafia.",
-    "Vote {target} — something's off about them."
-  ],
-  defense: [
-    "I'm not mafia, I promise!",
-    "Why would I be suspicious? I'm just a villager.",
-    "You're all wrong about me.",
-    "I've been helping this whole time!",
-    "Think about it — why would mafia act like me?"
-  ]
-}
 
 // ============================================================================
 // ROLE ASSIGNMENT
@@ -286,84 +257,226 @@ export function addChatMessage(gameState, playerId, message) {
 }
 
 // ============================================================================
-// BOT LOGIC
+// BOT INTELLIGENCE SYSTEM
 // ============================================================================
 
-export function createBot(index, existingBots = 0) {
-  const botIndex = existingBots + index + 1
-  return {
-    id: `bot_${botIndex}_${Date.now()}`,
-    name: `Bot_${botIndex}`,
-    isBot: true,
-    isAlive: true,
-    isRevealed: false,
-    role: null,
-    difficulty: 'medium'
+// ── Name Generation ──────────────────────────────────────────────────────────
+const NAME_FRAGMENTS = {
+  prefix: ['Dark', 'Neo', 'Shadow', 'Silent', 'Ghost', 'Alpha', 'Toxic', 'Mystic', 'Void', 'Neon', 'Hyper', 'Rogue'],
+  core:   ['Raven', 'Nix', 'Kira', 'Blaze', 'Knight', 'Wolf', 'Hunter', 'Zed', 'Viper', 'Storm', 'Byte', 'Flux'],
+  suffix: ['X', '99', '_YT', '_OP', '_47', '.exe', '_live', '_GG', '007', '_pro']
+}
+const PERSONALITY_NAMES = {
+  aggressive: ['Blaze', 'Hunter', 'Toxic', 'Alpha', 'Viper', 'Storm'],
+  passive:    ['Silent', 'Ghost', 'Void', 'Byte'],
+  manipulator:['Mystic', 'Shadow', 'Nix', 'Rogue']
+}
+const _usedBotNames = new Set()
+
+function generateBotName(personality) {
+  const patterns = [
+    () => NAME_FRAGMENTS.prefix[_r(NAME_FRAGMENTS.prefix.length)] + NAME_FRAGMENTS.core[_r(NAME_FRAGMENTS.core.length)],
+    () => NAME_FRAGMENTS.core[_r(NAME_FRAGMENTS.core.length)] + NAME_FRAGMENTS.suffix[_r(NAME_FRAGMENTS.suffix.length)],
+    () => NAME_FRAGMENTS.prefix[_r(NAME_FRAGMENTS.prefix.length)] + '_' + NAME_FRAGMENTS.core[_r(NAME_FRAGMENTS.core.length)],
+    () => NAME_FRAGMENTS.core[_r(NAME_FRAGMENTS.core.length)] + '_' + (Math.floor(Math.random() * 990) + 10),
+  ]
+  // Bias toward personality-linked names
+  const personalityPool = PERSONALITY_NAMES[personality] || []
+  for (let i = 0; i < 10; i++) {
+    let name
+    if (personalityPool.length && Math.random() < 0.5) {
+      const base = personalityPool[_r(personalityPool.length)]
+      name = base + NAME_FRAGMENTS.suffix[_r(NAME_FRAGMENTS.suffix.length)]
+    } else {
+      name = patterns[_r(patterns.length)]()
+    }
+    if (!_usedBotNames.has(name)) { _usedBotNames.add(name); return name }
   }
+  // Fallback with timestamp uniqueness
+  const fallback = 'Player' + Date.now().toString().slice(-4)
+  _usedBotNames.add(fallback)
+  return fallback
 }
 
-export function runBotNightAction(gameState, bot) {
-  const newState = { ...gameState }
-  const alivePlayers = newState.players.filter(p => p.isAlive)
-  const aliveNonMafia = alivePlayers.filter(p => p.role !== ROLES.MAFIA)
-  const aliveMafia = alivePlayers.filter(p => p.role === ROLES.MAFIA)
+function _r(n) { return Math.floor(Math.random() * n) }
 
-  if (bot.role === ROLES.MAFIA) {
-    // Mafia: pick random non-mafia target
-    const targets = aliveNonMafia.filter(p => p.id !== bot.id)
-    if (targets.length > 0) {
-      const target = targets[Math.floor(Math.random() * targets.length)]
-      return submitNightAction(newState, bot.id, 'mafia_kill', target.id)
-    }
-  } else if (bot.role === ROLES.DOCTOR) {
-    // Doctor: 60% chance save self, else random
-    const saveSelf = Math.random() < 0.6
-    const target = saveSelf ? bot : alivePlayers[Math.floor(Math.random() * alivePlayers.length)]
-    return submitNightAction(newState, bot.id, 'doctor_save', target.id)
-  } else if (bot.role === ROLES.DETECTIVE) {
-    // Detective: investigate random alive player (not self)
-    const targets = alivePlayers.filter(p => p.id !== bot.id)
-    if (targets.length > 0) {
-      const target = targets[Math.floor(Math.random() * targets.length)]
-      return submitNightAction(newState, bot.id, 'detective_investigate', target.id)
-    }
-  }
+// ── Personality System ────────────────────────────────────────────────────────
+const PERSONALITIES = ['aggressive', 'passive', 'manipulator']
 
-  return newState
+function randomPersonality() {
+  return PERSONALITIES[_r(PERSONALITIES.length)]
 }
 
-export function getBotChatMessage(bot, gameState) {
-  const alivePlayers = gameState.players.filter(p => p.isAlive && p.id !== bot.id)
-  const roll = Math.random()
+// ── Message Templates ─────────────────────────────────────────────────────────
+const TEMPLATES = {
+  accusation: [
+    "I've been watching {target}, something feels off.",
+    "{target} is acting strange this round.",
+    "Why is {target} so quiet? Very suspicious.",
+    "My gut says {target} is mafia. Vote them.",
+    "I don't trust {target} at all.",
+    "{target} hasn't said much. That's suspicious.",
+    "Has anyone else noticed {target} being weird?",
+    "I'm calling it — {target} is mafia.",
+  ],
+  defense: [
+    "That doesn't make sense, I voted with you.",
+    "Why are you targeting me suddenly?",
+    "If I was mafia, I wouldn't play like this.",
+    "I'm not mafia, I promise!",
+    "Think about it — why would mafia act like me?",
+    "I've been helping this whole time!",
+    "You're all wrong about me.",
+  ],
+  agreement: [
+    "Yeah I agree with {player}.",
+    "{player} might be right about {target}.",
+    "I was thinking the same thing.",
+    "That makes sense to me.",
+    "Agreed. Let's vote {target}.",
+  ],
+  doubt: [
+    "Not fully convinced yet.",
+    "Something feels off but I'm not sure.",
+    "Maybe, but let's hear more first.",
+    "I'm not sure about that accusation.",
+    "Could be, could not be.",
+  ],
+  neutral: [
+    "I have a bad feeling about someone here...",
+    "We need to think carefully before voting.",
+    "Something doesn't add up.",
+    "The mafia is among us. I can feel it.",
+    "Has anyone noticed anything unusual?",
+    "Let's not rush this decision.",
+    "I trust most of you... most.",
+    "We should vote based on behavior, not guesses.",
+  ]
+}
 
-  if (roll < 0.4 && alivePlayers.length > 0) {
-    // Accusation
-    const target = alivePlayers[Math.floor(Math.random() * alivePlayers.length)]
-    const template = BOT_MESSAGES.accusation[Math.floor(Math.random() * BOT_MESSAGES.accusation.length)]
-    return template.replace('{target}', target.name)
-  } else if (roll < 0.7) {
-    // Defense (if bot is being accused)
-    return BOT_MESSAGES.defense[Math.floor(Math.random() * BOT_MESSAGES.defense.length)]
+// ── Suspicion Engine ──────────────────────────────────────────────────────────
+function computeSuspicion(botMemory, targetId) {
+  let score = 0
+  const mem = botMemory[targetId] || {}
+  score += (mem.accusedBy || 0) * 10
+  score += (mem.randomAccusations || 0) * 8
+  score += (mem.defensiveCount || 0) * 6
+  score += (mem.silentRounds || 0) * 10
+  score -= (mem.agreedWithMajority || 0) * 5
+  return Math.min(100, Math.max(0, score))
+}
+
+function classifyMessage(text) {
+  const t = text.toLowerCase()
+  if (/is mafia|sus|i think|definitely|vote them|calling it/.test(t)) return 'accusation'
+  if (/not mafia|trust me|why me|i promise|wrong about/.test(t)) return 'defense'
+  if (/agree|true|yeah|same|right/.test(t)) return 'agreement'
+  if (/maybe|not sure|idk|could be|not convinced/.test(t)) return 'doubt'
+  return 'neutral'
+}
+
+// ── Bot Chat Decision ─────────────────────────────────────────────────────────
+export function getBotResponse(bot, gameState, recentMessages) {
+  const alive = gameState.players.filter(p => p.isAlive && p.id !== bot.id)
+  if (!alive.length) return null
+
+  const personality = bot.personality || 'passive'
+  const memory = bot.memory || {}
+
+  // Check if bot was recently accused
+  const wasAccused = recentMessages.some(m =>
+    m.message && m.message.toLowerCase().includes(bot.name.toLowerCase()) &&
+    classifyMessage(m.message) === 'accusation'
+  )
+
+  // Find highest suspicion target
+  const suspicionScores = alive.map(p => ({ p, score: computeSuspicion(memory, p.id) }))
+  suspicionScores.sort((a, b) => b.score - a.score)
+  const topSuspect = suspicionScores[0]?.p
+
+  // Check if majority is accusing someone
+  const accusationCounts = {}
+  recentMessages.slice(-6).forEach(m => {
+    if (classifyMessage(m.message) === 'accusation') {
+      alive.forEach(p => {
+        if (m.message.toLowerCase().includes(p.name.toLowerCase())) {
+          accusationCounts[p.id] = (accusationCounts[p.id] || 0) + 1
+        }
+      })
+    }
+  })
+  const majorityTarget = Object.entries(accusationCounts).sort((a, b) => b[1] - a[1])[0]
+
+  // Decision engine
+  let msgType, target, player
+
+  if (wasAccused) {
+    // Respond with defense
+    msgType = 'defense'
+  } else if (topSuspect && computeSuspicion(memory, topSuspect.id) > 30) {
+    // Accuse high-suspicion target
+    msgType = 'accusation'
+    target = topSuspect
+  } else if (majorityTarget && majorityTarget[1] >= 2) {
+    // Join or doubt majority
+    if (personality === 'manipulator' && Math.random() < 0.7) {
+      msgType = 'agreement'
+      target = alive.find(p => p.id === majorityTarget[0])
+      player = recentMessages.slice(-6).find(m => classifyMessage(m.message) === 'accusation')
+    } else if (personality === 'passive') {
+      msgType = 'doubt'
+    } else {
+      msgType = 'accusation'
+      target = alive.find(p => p.id === majorityTarget[0])
+    }
   } else {
-    // General day message
-    return BOT_MESSAGES.day[Math.floor(Math.random() * BOT_MESSAGES.day.length)]
-  }
-}
-
-export function getBotVote(bot, gameState) {
-  const alivePlayers = gameState.players.filter(p => p.isAlive && p.id !== bot.id)
-  if (alivePlayers.length === 0) return null
-
-  // Mafia bots vote for non-mafia
-  if (bot.role === ROLES.MAFIA) {
-    const nonMafia = alivePlayers.filter(p => p.role !== ROLES.MAFIA)
-    if (nonMafia.length > 0) {
-      return nonMafia[Math.floor(Math.random() * nonMafia.length)].id
+    // Personality-based fallback
+    const roll = Math.random()
+    if (personality === 'aggressive') {
+      msgType = roll < 0.8 ? 'accusation' : 'neutral'
+      target = alive[_r(alive.length)]
+    } else if (personality === 'passive') {
+      if (roll < 0.5) return null // Silent
+      msgType = roll < 0.7 ? 'neutral' : 'doubt'
+    } else {
+      // manipulator
+      msgType = roll < 0.4 ? 'agreement' : roll < 0.7 ? 'accusation' : 'neutral'
+      target = alive[_r(alive.length)]
     }
   }
 
-  // Others vote randomly (with slight suspicion weighting)
-  return alivePlayers[Math.floor(Math.random() * alivePlayers.length)].id
+  // Pick template
+  const pool = TEMPLATES[msgType] || TEMPLATES.neutral
+  // Avoid repetition: filter out last used if possible
+  const lastMsg = bot._lastMsg || ''
+  const filtered = pool.filter(t => t !== lastMsg)
+  const template = (filtered.length ? filtered : pool)[_r((filtered.length || pool.length))]
+
+  let msg = template
+  if (target) msg = msg.replace('{target}', target.name)
+  if (player) msg = msg.replace('{player}', player.playerName || 'someone')
+  msg = msg.replace('{target}', alive[_r(alive.length)].name)
+  msg = msg.replace('{player}', alive[_r(alive.length)].name)
+
+  return msg
+}
+
+// ── Update Bot Memory from Chat ───────────────────────────────────────────────
+export function updateBotMemory(bot, messages, players) {
+  const memory = bot.memory || {}
+  messages.forEach(msg => {
+    const type = classifyMessage(msg.message || '')
+    players.forEach(p => {
+      if (!memory[p.id]) memory[p.id] = {}
+      if (type === 'accusation' && msg.message.toLowerCase().includes(p.name.toLowerCase())) {
+        memory[p.id].accusedBy = (memory[p.id].accusedBy || 0) + 1
+      }
+      if (type === 'defense' && msg.playerId === p.id) {
+        memory[p.id].defensiveCount = (memory[p.id].defensiveCount || 0) + 1
+      }
+    })
+  })
+  return memory
 }
 
 // ============================================================================
