@@ -531,6 +531,15 @@ io.on('connection', (socket) => {
         io.to(roomId).emit('mafiaGameStarted', room.gameState)
         // Trigger bot actions for role assignment phase
         room.runBotActions(io)
+        // Auto-start night after 8s role reveal
+        setTimeout(() => {
+          if (room.gameState && room.gameState.phase === 'role_assignment') {
+            room.changePhase('night_phase')
+            io.to(roomId).emit('mafiaGameStateUpdate', room.gameState)
+            room.runBotActions(io)
+            room.startPhaseTimer(io)
+          }
+        }, 8000)
       }
     }
   })
@@ -585,6 +594,22 @@ io.on('connection', (socket) => {
       setTimeout(() => room.runBotActions(io), 500)
     }
   })
+
+  socket.on('mafiaPlayerReady', ({ roomId }) => {
+    const room = mafiaRooms.get(roomId)
+    if (room) {
+      room.setPlayerReady(socket.id)
+      io.to(roomId).emit('mafiaRoomUpdate', room.getRoomData())
+    }
+  })
+
+  socket.on('mafiaUpdateSettings', ({ roomId, settings }) => {
+    const room = mafiaRooms.get(roomId)
+    if (room && room.hostSocketId === socket.id) {
+      room.updateSettings(settings)
+      io.to(roomId).emit('mafiaRoomUpdate', room.getRoomData())
+    }
+  })
 })
 
 // ============================================================================
@@ -599,6 +624,57 @@ class MafiaRoom {
     this.gameStarted = false
     this.gameState = null
     this.botTimers = []
+    this.readyPlayers = new Set()
+    this.settings = { nightTime: 30, dayTime: 60, voteTime: 30 }
+    this.phaseTimer = null
+  }
+
+  setPlayerReady(socketId) {
+    this.readyPlayers.add(socketId)
+  }
+
+  updateSettings(settings) {
+    this.settings = { ...this.settings, ...settings }
+  }
+
+  startPhaseTimer(io) {
+    if (this.phaseTimer) clearTimeout(this.phaseTimer)
+    if (!this.gameState) return
+    const durMap = {
+      'night_phase': this.settings.nightTime * 1000,
+      'day_discussion': this.settings.dayTime * 1000,
+      'voting_phase': this.settings.voteTime * 1000,
+    }
+    const dur = durMap[this.gameState.phase]
+    if (!dur) return
+    this.phaseTimer = setTimeout(() => {
+      if (!this.gameState) return
+      if (this.gameState.phase === 'night_phase') {
+        this.changePhase('day_discussion')
+        io.to(this.roomId).emit('mafiaGameStateUpdate', this.gameState)
+        this.runBotActions(io)
+        this.startPhaseTimer(io)
+      } else if (this.gameState.phase === 'day_discussion') {
+        this.changePhase('voting_phase')
+        io.to(this.roomId).emit('mafiaGameStateUpdate', this.gameState)
+        this.runBotActions(io)
+        this.startPhaseTimer(io)
+      } else if (this.gameState.phase === 'voting_phase') {
+        this.resolveVotes()
+        io.to(this.roomId).emit('mafiaGameStateUpdate', this.gameState)
+        if (this.gameState.phase !== 'game_end') {
+          // Auto next round after 5s result display
+          setTimeout(() => {
+            if (this.gameState && this.gameState.phase === 'result_phase') {
+              this.nextRound()
+              io.to(this.roomId).emit('mafiaGameStateUpdate', this.gameState)
+              this.runBotActions(io)
+              this.startPhaseTimer(io)
+            }
+          }, 5000)
+        }
+      }
+    }, dur)
   }
 
   addPlayer(socketId, username, isHost = false) {
@@ -945,7 +1021,9 @@ class MafiaRoom {
       players: Array.from(this.players.values()),
       host: host?.name || null,
       gameStarted: this.gameStarted,
-      playerCount: this.players.size
+      playerCount: this.players.size,
+      settings: this.settings,
+      readyPlayers: Array.from(this.readyPlayers)
     }
   }
 }
