@@ -65,15 +65,14 @@ export default function Home() {
                   ))}
                 </div>
 
-                <div className="game-selection">
+                <div className="game-grid">
                   <div className="game-card">
                     <div className="game-card-header">
                       <h3>HYPERGRID</h3>
                       <span className="game-badge">MULTIPLAYER</span>
                     </div>
                     <p className="game-description">Ultimate Tic Tac Toe • 9 boards • Strategic gameplay</p>
-                    
-                    <button 
+                    <button
                       onClick={() => router.push('/hypergrid')}
                       className="btn-tech-primary"
                     >
@@ -83,33 +82,20 @@ export default function Home() {
                     </button>
                   </div>
 
-                  <div className="game-divider">
-                    <div className="divider-line"></div>
-                    <span className="divider-text">OR</span>
-                    <div className="divider-line"></div>
-                  </div>
-
-                  <div className="game-card">
+                  <div className="game-card game-card-coming-soon">
                     <div className="game-card-header">
                       <h3>HYPERPOLY</h3>
-                      <span className="game-badge game-badge-new">NEW</span>
+                      <span className="game-badge game-badge-soon">COMING SOON</span>
                     </div>
                     <p className="game-description">Mini Monopoly • 10 min games • 2-4 players • Room-based</p>
-                    
-                    <button 
-                      onClick={() => router.push('/hyperpoly')}
-                      className="btn-tech-primary"
-                    >
+                    <div className="coming-soon-overlay">
+                      <span className="coming-soon-text">🚧 COMING SOON</span>
+                    </div>
+                    <button className="btn-tech-primary" disabled>
                       <span className="btn-corner btn-corner-tl"></span>
                       <span className="btn-corner btn-corner-br"></span>
                       🎲 PLAY HYPERPOLY
                     </button>
-                  </div>
-
-                  <div className="game-divider">
-                    <div className="divider-line"></div>
-                    <span className="divider-text">OR</span>
-                    <div className="divider-line"></div>
                   </div>
 
                   <div className="game-card game-card-mafia">
@@ -118,8 +104,7 @@ export default function Home() {
                       <span className="game-badge game-badge-new">NEW</span>
                     </div>
                     <p className="game-description">Social Deduction • 4-12 players • AI bots • Night & Day phases</p>
-                    
-                    <button 
+                    <button
                       onClick={() => router.push('/hypermafia')}
                       className="btn-tech-primary"
                       style={{ borderColor: '#e74c3c', color: '#e74c3c' }}

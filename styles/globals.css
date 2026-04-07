@@ -3131,12 +3131,24 @@ body {
    GAME SELECTION CARDS
    ============================================ */
 
-.game-selection {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
   margin-bottom: 1.5rem;
   width: 100%;
+}
+
+@media (max-width: 900px) {
+  .game-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .game-card {
@@ -3146,19 +3158,46 @@ body {
   padding: 1.5rem;
   backdrop-filter: blur(10px);
   transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.game-card:hover {
+.game-card:hover:not(.game-card-coming-soon) {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.game-card-coming-soon {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.coming-soon-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  background: rgba(255,193,7,0.08);
+  border: 1px dashed rgba(255,193,7,0.4);
+  border-radius: 4px;
+}
+
+.coming-soon-text {
+  font-size: 0.7rem;
+  color: #ffc107;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.15em;
 }
 
 .game-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
 }
 
 .game-card-header h3 {
@@ -3186,32 +3225,23 @@ body {
   color: #4caf50;
 }
 
+.game-badge-soon {
+  background: rgba(255, 193, 7, 0.15);
+  border-color: #ffc107;
+  color: #ffc107;
+}
+
 .game-description {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-family: 'Courier New', monospace;
-  margin: 0 0 1.5rem 0;
+  margin: 0;
   line-height: 1.6;
-}
-
-.game-divider {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 0.5rem 0;
-}
-
-.divider-line {
   flex: 1;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.2);
 }
 
-.divider-text {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.75rem;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 0.2em;
+.game-card .btn-tech-primary {
+  margin-top: auto;
 }
 
 /* Mobile adjustments for game cards */
@@ -3226,11 +3256,6 @@ body {
 
   .game-description {
     font-size: 0.75rem;
-  }
-
-  .game-selection {
-    gap: 1rem;
-    margin-bottom: 1rem;
   }
 }
 
