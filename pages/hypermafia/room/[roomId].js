@@ -22,6 +22,7 @@ export default function HyperMafiaRoom() {
   const [voteTarget, setVoteTarget] = useState(null)
   const [timer, setTimer] = useState(0)
   const [phaseAnim, setPhaseAnim] = useState(false)
+  const [phaseAnimType, setPhaseAnimType] = useState('day') // 'day' | 'night'
   const [investigateResult, setInvestigateResult] = useState(null)
   const [showSettings, setShowSettings] = useState(false)
   const [settings, setSettings] = useState({ nightTime: 30, dayTime: 60, voteTime: 30 })
@@ -52,9 +53,18 @@ export default function HyperMafiaRoom() {
     newSocket.on('mafiaGameStateUpdate', (state) => {
       setGameState(prev => {
         if (prev && prev.phase !== state.phase) {
-          setPhaseAnim(true)
-          setTimeout(() => setPhaseAnim(false), 1800)
-          // Reset night action state when phase changes
+          // Only animate on true night↔day boundary transitions
+          const nightToDay = prev.phase === 'night_phase' && state.phase === 'day_discussion'
+          const anyToDayToNight = (
+            ['day_discussion', 'voting_phase', 'result_phase'].includes(prev.phase) &&
+            state.phase === 'night_phase'
+          )
+          if (nightToDay || anyToDayToNight) {
+            setPhaseAnimType(anyToDayToNight ? 'night' : 'day')
+            setPhaseAnim(true)
+            setTimeout(() => setPhaseAnim(false), 1800)
+          }
+          // Reset night action state when night begins
           if (state.phase === 'night_phase') setNightActionDone(false)
         }
         return state
@@ -141,7 +151,8 @@ export default function HyperMafiaRoom() {
   if (!connected) return <ConnectionLoader message="Connecting to server..." />
 
   const isNight = gameState?.phase === PHASES.NIGHT
-  const isDay = gameState?.phase === PHASES.DAY || gameState?.phase === PHASES.VOTING
+  // Day sky persists through discussion, voting, result — only night is dark
+  const isDay = gameState?.phase !== PHASES.NIGHT
 
   // LOBBY
   if (!roomData.gameStarted) {
@@ -276,11 +287,11 @@ export default function HyperMafiaRoom() {
         {isDay && <DaySky />}
       </div>
 
-      {/* Phase transition overlay */}
+      {/* Phase transition overlay — only on night↔day boundary */}
       {phaseAnim && (
-        <div className={`mafia-phase-transition ${isNight ? 'transition-night' : 'transition-day'}`}>
-          <div className="phase-transition-icon">{isNight ? '🌙' : '☀️'}</div>
-          <div className="phase-transition-text">{isNight ? 'NIGHT FALLS' : 'DAY BREAKS'}</div>
+        <div className={`mafia-phase-transition ${phaseAnimType === 'night' ? 'transition-night' : 'transition-day'}`}>
+          <div className="phase-transition-icon">{phaseAnimType === 'night' ? '🌙' : '☀️'}</div>
+          <div className="phase-transition-text">{phaseAnimType === 'night' ? 'NIGHT FALLS' : 'DAY BREAKS'}</div>
         </div>
       )}
 
