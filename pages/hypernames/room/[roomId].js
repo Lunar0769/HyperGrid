@@ -72,30 +72,26 @@ export default function HyperNamesRoom() {
     const board = generateBoard()
     const state = {
       board,
-      turn: 'red',          // red = AI spymaster's team in single player
-      phase: 'spymaster',   // spymaster | guessing | end
+      turn: 'red',
+      phase: 'spymaster',
       currentClue: null,
       guessesLeft: 0,
       winner: null,
-      spymasterRole: isSingle ? 'ai' : 'ai',
-      guesserRole:   isSingle ? 'human' : 'ai',
       round: 1
     }
     setGameState(state)
     addLog('Game started! AI is thinking...')
-    if (isSingle || isBvB) {
-      setTimeout(() => runAISpymaster(state), 1200)
-    }
-  }, [username, isSingle, isBvB])
+    setTimeout(() => runAISpymaster(state), 1200)
+  }, [username]) // eslint-disable-line
 
   // ── BvB: auto-run guesser after clue ─────────────────────────────────────
   useEffect(() => {
     if (!isBvB || !gameState || gameState.phase !== 'guessing' || !gameState.currentClue) return
-    const timer = setTimeout(() => runAIGuesser(), 1500)
+    const timer = setTimeout(() => runAIGuesser(gameState), 1500)
     return () => clearTimeout(timer)
-  }, [gameState?.phase, gameState?.currentClue])
+  }, [gameState?.phase, gameState?.round, gameState?.currentClue?.word]) // eslint-disable-line
 
-  function runAISpymaster(state = gameState) {
+  function runAISpymaster(state) {
     if (!state) return
     setAiThinking(true)
     setTimeout(() => {
@@ -108,61 +104,71 @@ export default function HyperNamesRoom() {
         ...state,
         phase: 'guessing',
         currentClue: clue,
-        guessesLeft: clue.number + 1
+        guessesLeft: clue.number + 1  // +1 bonus guess
       }
       setGameState(newState)
-      setGuessesLeft(clue.number + 1)
       setAiThinking(false)
     }, 800)
   }
 
-  function runAIGuesser(state = gameState) {
+  function runAIGuesser(state) {
     if (!state || !state.currentClue) return
     const guesses = aiGuess(state.currentClue.word, state.currentClue.number, state.board, state.turn, diff)
-    let currentState = { ...state }
     let delay = 0
+    let workingState = { ...state }
 
-    guesses.forEach((guess, i) => {
+    guesses.forEach((guess) => {
       delay += 1200
       setTimeout(() => {
         setGameState(prev => {
           if (!prev || prev.phase !== 'guessing') return prev
-          return revealCell(prev, guess.index)
+          const next = revealCell(prev, guess.index)
+          workingState = next
+          return next
         })
       }, delay)
     })
 
-    // End turn after guesses
     setTimeout(() => {
       setGameState(prev => {
-        if (!prev) return prev
-        const win = checkWin(prev.board)
-        if (win) return { ...prev, phase: 'end', winner: win }
-        const nextTurn = prev.turn === 'red' ? 'blue' : 'red'
-        const next = { ...prev, turn: nextTurn, phase: 'spymaster', currentClue: null, guessesLeft: 0 }
-        setTimeout(() => runAISpymaster(next), 1000)
-        return next
+        if (!prev || prev.phase === 'end') return prev
+        if (prev.phase === 'guessing') {
+          // still guessing — force end turn
+          const nextTurn = prev.turn === 'red' ? 'blue' : 'red'
+          const next = { ...prev, turn: nextTurn, phase: 'spymaster', currentClue: null, guessesLeft: 0 }
+          setTimeout(() => runAISpymaster(next), 1000)
+          return next
+        }
+        return prev
       })
-    }, delay + 800)
+    }, delay + 1000)
   }
 
   function revealCell(state, index) {
+    const cell = state.board[index]
+    if (!cell || cell.revealed) return state
+
     const newBoard = state.board.map((c, i) =>
       i === index ? { ...c, revealed: true, revealedBy: state.turn } : c
     )
-    const win = checkWin(newBoard)
-    const cell = state.board[index]
+
     addLog(`Revealed: ${cell.word} → ${cell.role.toUpperCase()}`)
     setRevealAnim(index)
     setTimeout(() => setRevealAnim(null), 600)
 
-    if (win) return { ...state, board: newBoard, phase: 'end', winner: win }
-
-    // Wrong guess or assassin
+    // Assassin
     if (cell.role === 'assassin') {
       addLog('💀 ASSASSIN! Game over.')
       return { ...state, board: newBoard, phase: 'end', winner: { winner: state.turn === 'red' ? 'blue' : 'red', reason: 'assassin' } }
     }
+
+    // Check win after reveal
+    const redLeft  = newBoard.filter(c => c.role === 'red'  && !c.revealed).length
+    const blueLeft = newBoard.filter(c => c.role === 'blue' && !c.revealed).length
+    if (redLeft === 0)  return { ...state, board: newBoard, phase: 'end', winner: { winner: 'red',  reason: 'all_found' } }
+    if (blueLeft === 0) return { ...state, board: newBoard, phase: 'end', winner: { winner: 'blue', reason: 'all_found' } }
+
+    // Wrong team word — pass turn
     if (cell.role !== state.turn) {
       addLog(`Wrong! Turn passes.`)
       const nextTurn = state.turn === 'red' ? 'blue' : 'red'
@@ -171,13 +177,18 @@ export default function HyperNamesRoom() {
       return next
     }
 
+    // Correct — decrement guesses
     const newGuessesLeft = state.guessesLeft - 1
+    addLog(`Correct! ${newGuessesLeft} guess${newGuessesLeft !== 1 ? 'es' : ''} left.`)
+
     if (newGuessesLeft <= 0) {
+      addLog('No guesses left. Turn passes.')
       const nextTurn = state.turn === 'red' ? 'blue' : 'red'
       const next = { ...state, board: newBoard, turn: nextTurn, phase: 'spymaster', currentClue: null, guessesLeft: 0 }
       if (isSingle || isBvB) setTimeout(() => runAISpymaster(next), 1000)
       return next
     }
+
     return { ...state, board: newBoard, guessesLeft: newGuessesLeft }
   }
 

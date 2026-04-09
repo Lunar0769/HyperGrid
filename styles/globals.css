@@ -6139,7 +6139,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.6rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   background: rgba(255,255,255,0.04);
   border-bottom: 1px solid rgba(255,255,255,0.08);
   position: relative;
@@ -6179,7 +6179,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   background: rgba(52,152,219,0.08);
   border-bottom: 1px solid rgba(52,152,219,0.2);
   position: relative;
@@ -6188,24 +6188,25 @@ body {
 }
 
 .cn-clue-word {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: white;
   letter-spacing: 0.15em;
 }
 
 .cn-clue-num {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: #3498db;
   background: rgba(52,152,219,0.2);
   border: 2px solid #3498db;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .cn-clue-explain {
@@ -6214,32 +6215,30 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* 5×5 Board */
+/* 5×5 Board — wide cards, short height */
 .cn-board {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 0.5rem;
-  padding: 1rem 1.5rem;
-  max-width: 900px;
+  gap: 6px;
+  padding: 0.75rem 1rem;
+  max-width: 860px;
   width: 100%;
   margin: 0 auto;
   position: relative;
   z-index: 10;
-  flex: 1;
 }
 
 .cn-cell {
-  aspect-ratio: 1.6;
+  height: 64px;
   border: 2px solid;
   border-radius: 6px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.12s ease, border-color 0.12s ease, background 0.2s ease;
   user-select: none;
-  min-height: 60px;
+  padding: 4px 6px;
 }
 
 .cn-cell.clickable {
@@ -6248,51 +6247,52 @@ body {
 
 .cn-cell.clickable:hover {
   z-index: 2;
+  filter: brightness(1.2);
 }
 
 .cn-cell.revealed {
-  opacity: 0.9;
+  opacity: 0.88;
 }
 
 .cn-cell.reveal-anim {
-  animation: cellReveal 0.5s ease;
+  animation: cellReveal 0.45s ease;
 }
 
 @keyframes cellReveal {
   0%   { transform: scale(1); }
-  40%  { transform: scale(1.12) rotateY(20deg); }
+  35%  { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 
 .cn-cell-word {
-  font-size: clamp(0.55rem, 1.2vw, 0.85rem);
+  font-size: clamp(0.5rem, 1.1vw, 0.78rem);
   font-weight: bold;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-align: center;
-  padding: 0 4px;
   line-height: 1.2;
+  word-break: break-word;
 }
 
 .cn-assassin-icon {
-  font-size: 1rem;
+  font-size: 0.85rem;
   position: absolute;
-  bottom: 4px;
-  right: 6px;
+  bottom: 3px;
+  right: 5px;
 }
 
 .cn-role-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   position: absolute;
-  bottom: 5px;
-  right: 6px;
+  bottom: 4px;
+  right: 5px;
 }
 
 /* Action panel */
 .cn-action-panel {
-  padding: 0.75rem 1.5rem;
-  max-width: 900px;
+  padding: 0.5rem 1rem;
+  max-width: 860px;
   width: 100%;
   margin: 0 auto;
   position: relative;
@@ -6304,7 +6304,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 1rem;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 6px;
@@ -6320,7 +6320,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 1rem;
   background: rgba(52,152,219,0.06);
   border: 1px solid rgba(52,152,219,0.2);
   border-radius: 6px;
@@ -6330,7 +6330,7 @@ body {
 .cn-clue-input {
   flex: 1;
   min-width: 140px;
-  padding: 0.5rem 0.75rem;
+  padding: 0.45rem 0.75rem;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(52,152,219,0.4);
   border-radius: 4px;
@@ -6349,8 +6349,8 @@ body {
 }
 
 .cn-num-btn {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   background: transparent;
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 4px;
@@ -6371,7 +6371,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 1rem;
   color: rgba(255,255,255,0.6);
   font-size: 0.8rem;
 }
@@ -6401,7 +6401,7 @@ body {
   text-align: center;
   color: rgba(255,255,255,0.4);
   font-size: 0.8rem;
-  padding: 0.75rem;
+  padding: 0.6rem;
 }
 
 /* End panel */
@@ -6410,42 +6410,42 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  padding: 1.5rem;
+  padding: 1rem;
   text-align: center;
 }
 
-.cn-end-icon { font-size: 3rem; }
+.cn-end-icon { font-size: 2.5rem; }
 
 .cn-end-title {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: bold;
   letter-spacing: 0.2em;
 }
 
 .cn-end-reason {
   color: rgba(255,255,255,0.5);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   margin-bottom: 0.5rem;
 }
 
 /* Game log */
 .cn-log {
-  max-width: 900px;
+  max-width: 860px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 1.5rem 1rem;
+  padding: 0 1rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
   position: relative;
   z-index: 10;
 }
 
 .cn-log-entry {
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.5);
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.45);
   letter-spacing: 0.03em;
-  padding: 0.15rem 0;
+  padding: 0.1rem 0;
   border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 
@@ -6598,13 +6598,13 @@ body {
 /* Responsive board */
 @media (max-width: 600px) {
   .cn-board {
-    gap: 0.3rem;
+    gap: 4px;
     padding: 0.5rem;
   }
   .cn-cell {
-    min-height: 44px;
+    height: 50px;
   }
   .cn-cell-word {
-    font-size: 0.5rem;
+    font-size: 0.45rem;
   }
 }
