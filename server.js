@@ -25,6 +25,7 @@ const io = new Server(httpServer, {
 const rooms = new Map()
 const hyperpolyRooms = new Map()
 const mafiaRooms = new Map()
+const namesRooms = new Map()
 
 class GameRoom {
   constructor(roomId, hostId) {
@@ -428,6 +429,18 @@ io.on('connection', (socket) => {
         }
       }
     }
+
+    if (socket.namesRoomId) {
+      const room = namesRooms.get(socket.namesRoomId)
+      if (room) {
+        room.removePlayer(socket.id)
+        if (room.players.size === 0) {
+          namesRooms.delete(socket.namesRoomId)
+        } else {
+          io.to(socket.namesRoomId).emit('namesRoomUpdate', room.getRoomData())
+        }
+      }
+    }
   })
 
   // HyperPoly Events
@@ -658,6 +671,55 @@ io.on('connection', (socket) => {
     if (room && room.hostSocketId === socket.id) {
       room.updateSettings(settings)
       io.to(roomId).emit('mafiaRoomUpdate', room.getRoomData())
+    }
+  })
+
+  // ── HYPERNAMES EVENTS ────────────────────────────────────────────────────
+
+  socket.on('joinNamesRoom', ({ roomId, username, isHost }) => {
+    let room = namesRooms.get(roomId)
+    if (!room) {
+      room = new CodenamesRoom(roomId, socket.id)
+      namesRooms.set(roomId, room)
+    }
+    room.addPlayer(socket.id, username, isHost)
+    socket.join(roomId)
+    socket.namesRoomId = roomId
+    io.to(roomId).emit('namesRoomUpdate', room.getRoomData())
+  })
+
+  socket.on('startNamesGame', ({ roomId }) => {
+    const room = namesRooms.get(roomId)
+    if (room && room.hostSocketId === socket.id) {
+      room.startGame()
+      io.to(roomId).emit('namesGameStarted', room.gameState)
+    }
+  })
+
+  socket.on('namesClue', ({ roomId, clue }) => {
+    const room = namesRooms.get(roomId)
+    if (room && room.gameState) {
+      room.gameState.currentClue = clue
+      room.gameState.phase = 'guessing'
+      room.gameState.guessesLeft = clue.number + 1
+      room.gameState.lastClue = clue
+      io.to(roomId).emit('namesGameStateUpdate', room.gameState)
+    }
+  })
+
+  socket.on('namesGuess', ({ roomId, index }) => {
+    const room = namesRooms.get(roomId)
+    if (room && room.gameState) {
+      room.revealCell(index)
+      io.to(roomId).emit('namesGameStateUpdate', room.gameState)
+    }
+  })
+
+  socket.on('namesEndTurn', ({ roomId }) => {
+    const room = namesRooms.get(roomId)
+    if (room && room.gameState) {
+      room.endTurn()
+      io.to(roomId).emit('namesGameStateUpdate', room.gameState)
     }
   })
 })
@@ -1270,6 +1332,140 @@ class MafiaRoom {
       playerCount: this.players.size,
       settings: this.settings,
       readyPlayers: Array.from(this.readyPlayers)
+    }
+  }
+}
+
+// ============================================================================
+// CODENAMES ROOM CLASS
+// ============================================================================
+
+const CN_WORD_POOL = [
+  'ANCHOR','APPLE','ARROW','AXE','BALL','BELL','BOOK','BOTTLE','BOX','BRIDGE',
+  'BRUSH','BUCKET','CAMERA','CANDLE','CAR','CARD','CHAIN','CLOCK','CLOUD','COIN',
+  'CROWN','CUP','DIAMOND','DOOR','DRUM','EGG','FAN','FEATHER','FLAG','FLASK',
+  'FORK','FRAME','GEAR','GLASS','GLOVE','HAMMER','HOOK','KEY','KNIFE','LAMP',
+  'LENS','LOCK','MAP','MASK','MIRROR','NEEDLE','NET','PIPE','PLATE','RING',
+  'ROPE','SCALE','SCREEN','SHIELD','SHOE','SIGN','SPOON','STAR','STONE','SWORD',
+  'TABLE','TORCH','TOWER','TRAP','TREE','UMBRELLA','VASE','WATCH','WHEEL','WIRE',
+  'AFRICA','AIRPORT','AMAZON','ARCTIC','BANK','BEACH','BERLIN','CAVE','CHINA',
+  'CHURCH','CITY','CLIFF','COAST','COURT','DESERT','DOCK','EGYPT','FARM','FIELD',
+  'FOREST','FRANCE','GARDEN','GATE','GREECE','HARBOR','HILL','INDIA','ISLAND',
+  'JAPAN','JUNGLE','LAKE','LONDON','MARKET','MARS','MINE','MOON','MOUNTAIN',
+  'MUSEUM','OCEAN','PALACE','PARK','PERU','PLAIN','PORT','PRISON','PYRAMID',
+  'RIVER','ROME','SCHOOL','SPACE','SPAIN','STATION','TEMPLE','TOKYO','VALLEY',
+  'VILLAGE','VOLCANO','WALL','WELL','WOODS','ATTACK','BAKE','BLAST','BREAK',
+  'BUILD','BURN','CATCH','CHARGE','CHASE','CLIMB','COOK','CRASH','CUT','DANCE',
+  'DIVE','DRAW','DRIVE','DROP','DIG','ESCAPE','FALL','FIGHT','FLY','FOLLOW',
+  'FREEZE','GRAB','GROW','GUARD','HACK','HIDE','HUNT','JUMP','KICK','LAUNCH',
+  'LEAD','LEAP','LIFT','MARCH','MOVE','OPEN','PAINT','PLANT','PULL','PUSH',
+  'RUN','SAIL','SEARCH','SHOOT','SINK','SLIDE','SPIN','STEAL','STRIKE','SWIM',
+  'THROW','TRACK','TURN','AGENT','ALARM','ANGEL','ANSWER','BALANCE','BATTLE',
+  'BOND','CHAOS','CODE','CONTROL','CRISIS','CURSE','DANGER','DARK','DAWN',
+  'DEATH','DREAM','DUSK','ECHO','ENERGY','EVIL','FAITH','FAME','FATE','FEAR',
+  'FIRE','FORCE','GHOST','GLORY','GRACE','GREED','GUILT','HEART','HERO','HONOR',
+  'HOPE','HORROR','ICE','IDEA','JUSTICE','KARMA','LEGEND','LIGHT','LOGIC','LUCK',
+  'MAGIC','MIND','MYTH','NIGHT','ORDER','PAIN','PEACE','POWER','PRIDE','RAGE',
+  'REASON','RISK','RULE','SECRET','SHADOW','SIGNAL','SILENCE','SOUL','SPIRIT',
+  'STORM','STRENGTH','TERROR','THEORY','THOUGHT','TIME','TRUTH','VOID','WAR',
+  'WISDOM','ALGORITHM','ARRAY','BINARY','BIT','BUFFER','BUG','BYTE','CACHE',
+  'CHIP','CIPHER','CIRCUIT','CLONE','CLUSTER','CORE','CRYPTO','DATA','DEBUG',
+  'DEPLOY','DEVICE','DOMAIN','DRONE','ENCRYPT','ENGINE','EXPLOIT','FILE',
+  'FIREWALL','FLASH','GRID','HOST','INDEX','INPUT','KERNEL','LASER','LINK',
+  'LOG','LOOP','MATRIX','MEMORY','MESH','MODULE','NETWORK','NODE','OUTPUT',
+  'PACKET','PATCH','PIXEL','PLUGIN','PROCESS','PROTOCOL','PROXY','QUERY',
+  'QUEUE','RADAR','RAM','REBOOT','RELAY','RENDER','ROBOT','ROOT','ROUTER',
+  'RUNTIME','SCAN','SCRIPT','SERVER','SOCKET','SOURCE','STACK','STREAM','SYNC',
+  'SYSTEM','TERMINAL','TOKEN','TRACE','UPLOAD','USER','VECTOR','VIRUS','WAVE',
+  'WEB','ZERO','ASTEROID','ATLAS','AURORA','BEACON','COMET','COSMOS','CRATER',
+  'ECLIPSE','GALAXY','GRAVITY','HORIZON','METEOR','NEBULA','NOVA','ORBIT',
+  'PHOTON','PLANET','PLASMA','PROBE','PULSAR','QUASAR','ROCKET','SATELLITE',
+  'SOLAR','SUN','SUPERNOVA','TELESCOPE','TITAN','UNIVERSE','WARP','ZENITH',
+  'ALIAS','AMBUSH','ASSASSIN','BADGE','BRIBE','BUREAU','CASE','CLUE','CONTACT',
+  'COVER','CRIME','DETECTIVE','DISGUISE','DOUBLE','EVIDENCE','EXPOSE','FUGITIVE',
+  'HEIST','INFORMANT','INTEL','MOLE','OPERATION','PROFILE','PURSUIT','RAID',
+  'RANSOM','ROGUE','SAFE','SNIPER','SPY','STAKE','SUSPECT','TARGET','UNDERCOVER',
+  'VAULT','WITNESS'
+]
+
+class CodenamesRoom {
+  constructor(roomId, hostSocketId) {
+    this.roomId = roomId
+    this.hostSocketId = hostSocketId
+    this.players = new Map()
+    this.gameStarted = false
+    this.gameState = null
+  }
+
+  addPlayer(socketId, username, isHost = false) {
+    if (this.players.size >= 8) return false
+    this.players.set(socketId, { id: socketId, name: username, isHost })
+    if (isHost) this.hostSocketId = socketId
+    return true
+  }
+
+  removePlayer(socketId) {
+    this.players.delete(socketId)
+    if (this.hostSocketId === socketId && this.players.size > 0) {
+      const next = this.players.values().next().value
+      if (next) { this.hostSocketId = next.id; next.isHost = true }
+    }
+  }
+
+  startGame() {
+    this.gameStarted = true
+    const pool = [...CN_WORD_POOL].sort(() => Math.random() - 0.5).slice(0, 25)
+    const roles = [...Array(9).fill('red'), ...Array(8).fill('blue'), ...Array(7).fill('neutral'), 'assassin'].sort(() => Math.random() - 0.5)
+    const board = pool.map((word, i) => ({ word, role: roles[i], revealed: false, index: i }))
+    this.gameState = {
+      board, turn: 'red', phase: 'spymaster',
+      currentClue: null, guessesLeft: 0, lastClue: null,
+      winner: null, round: 1
+    }
+  }
+
+  revealCell(index) {
+    if (!this.gameState) return
+    const cell = this.gameState.board[index]
+    if (!cell || cell.revealed) return
+    cell.revealed = true
+    cell.revealedBy = this.gameState.turn
+
+    // Check assassin
+    if (cell.role === 'assassin') {
+      this.gameState.winner = { winner: this.gameState.turn === 'red' ? 'blue' : 'red', reason: 'assassin' }
+      this.gameState.phase = 'end'; return
+    }
+
+    // Check win
+    const redLeft  = this.gameState.board.filter(c => c.role === 'red'  && !c.revealed).length
+    const blueLeft = this.gameState.board.filter(c => c.role === 'blue' && !c.revealed).length
+    if (redLeft === 0)  { this.gameState.winner = { winner: 'red',  reason: 'all_found' }; this.gameState.phase = 'end'; return }
+    if (blueLeft === 0) { this.gameState.winner = { winner: 'blue', reason: 'all_found' }; this.gameState.phase = 'end'; return }
+
+    // Wrong guess
+    if (cell.role !== this.gameState.turn) { this.endTurn(); return }
+
+    this.gameState.guessesLeft--
+    if (this.gameState.guessesLeft <= 0) this.endTurn()
+  }
+
+  endTurn() {
+    if (!this.gameState) return
+    this.gameState.turn = this.gameState.turn === 'red' ? 'blue' : 'red'
+    this.gameState.phase = 'spymaster'
+    this.gameState.currentClue = null
+    this.gameState.guessesLeft = 0
+    this.gameState.round++
+  }
+
+  getRoomData() {
+    const host = Array.from(this.players.values()).find(p => p.id === this.hostSocketId)
+    return {
+      players: Array.from(this.players.values()),
+      host: host?.name || null,
+      gameStarted: this.gameStarted,
+      playerCount: this.players.size
     }
   }
 }

@@ -114,6 +114,23 @@ export default function Home() {
                       🔪 PLAY HYPERMAFIA
                     </button>
                   </div>
+
+                  <div className="game-card game-card-names">
+                    <div className="game-card-header">
+                      <h3 style={{ color: '#3498db' }}>HYPERNAMES</h3>
+                      <span className="game-badge game-badge-new">NEW</span>
+                    </div>
+                    <p className="game-description">Codenames • AI Spymaster • Semantic clues • 1-8 players</p>
+                    <button
+                      onClick={() => router.push('/hypernames')}
+                      className="btn-tech-primary"
+                      style={{ borderColor: '#3498db', color: '#3498db' }}
+                    >
+                      <span className="btn-corner btn-corner-tl"></span>
+                      <span className="btn-corner btn-corner-br"></span>
+                      🔤 PLAY HYPERNAMES
+                    </button>
+                  </div>
                 </div>
 
                 <div className="deco-line-bottom">
